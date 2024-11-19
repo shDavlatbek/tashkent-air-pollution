@@ -1,49 +1,121 @@
 <template>
-  <div>
-    <h1>Login</h1>
-    <form @submit.prevent="handleLogin">
-      <div>
-        <label for="email">Email:</label>
-        <input id="email" v-model="email" type="email" required />
+  <div class="d-flex flex-column" style="height: 100vh;">
+    <div class="page page-center">
+      <div class="container container-tight py-4" :style="{
+        pointerEvents: submitLoading ? 'none' : 'auto',
+        filter: submitLoading ? 'blur(1px)' : 'none'
+      }">
+        <div class="text-center mb-4">
+          <a href="javascript:void(0)" class="navbar-brand navbar-brand-autodark" style="height: 100px; width: 100px;">
+            <IconLogin stroke="2" class="w-100 h-100" />
+          </a>
+        </div>
+        <div class="card card-md">
+          <div :class="{ progress: true, invisible: !submitLoading }">
+            <div class="progress-bar progress-bar-indeterminate bg-primary"></div>
+          </div>
+          <div class="card-body">
+            <h2 class="h2 text-center mb-4">Tizimga kirish</h2>
+            <form @submit.prevent="handleLogin">
+              <div class="mb-3">
+                <label :class="['form-label', {'text-danger': isInvalid}]">
+                  Elektron manzil
+                </label>
+                <input 
+                  type="email" 
+                  v-model="email" 
+                  :class="{
+                    'form-control': true, 
+                    'is-invalid': isInvalid,
+                  }" 
+                  @input="isInvalid = false"
+                  placeholder="email@example.com" 
+                  required
+                />
+                
+              </div>
+              <div class="mb-2">
+                <label :class="['form-label', {'text-danger': isInvalid}]">
+                  Parol
+                </label>
+                <div class="row g-2">
+                  <div class="col">
+                    <input 
+                      :type="showPassword ? 'text' : 'password'" 
+                      :class="{
+                        'form-control': true, 
+                        'is-invalid': isInvalid,
+                      }" 
+                      @input="isInvalid = false"
+                      v-model="password" 
+                      required
+                    />
+                    <div v-if="isInvalid" class="invalid-feedback">Elektron manzil yoki parol notug'ri</div>
+                  </div>
+                  <div class="col-auto">
+                    <a 
+                      href="javascript:void(0)" 
+                      @click="showPassword = !showPassword" 
+                      class="btn btn-icon"
+                      :style="{border: isInvalid ? '1px solid red' : 'none'}"
+                      aria-label="Button"
+                    >
+                      <IconEye v-if="!showPassword" class="icon" stroke="2" />
+                      <IconEyeOff v-else class="icon" stroke="2" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-footer">
+                <button type="submit" class="input-icon btn btn-primary w-100">
+                  <span>Kirish</span>
+                </button>
+                
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-      <div>
-        <label for="password">Password:</label>
-        <input id="password" v-model="password" type="password" required />
-      </div>
-      <button type="submit">Login</button>
-    </form>
+    </div>
   </div>
 </template>
 
 <script>
 import { login } from "../api/auth";
+import { IconLogin, IconEye, IconEyeOff } from '@tabler/icons-vue';
 
 export default {
   data() {
     return {
       email: "",
       password: "",
+      showPassword: false,
+      submitLoading: false,
+      isInvalid: false
     };
   },
   methods: {
     async handleLogin() {
       let res;
+      this.submitLoading = true
       try {
         res = await login(this.email, this.password);
-        alert(`Succesfully loged. ${JSON.stringify(res)}`);
         localStorage.setItem("full_name", res.full_name);
         this.$router.push("/authenticated");
       } catch (error) {
-        alert(`Login failed. Please check your credentials. ${JSON.stringify(res)}`);
+        this.isInvalid = true
+        this.submitLoading = false
       }
     },
   },
+  components: { IconLogin, IconEye, IconEyeOff }
 };
 </script>
 
 <style scoped>
-form {
-  max-width: 400px;
-  margin: 0 auto;
+.is-invalid{
+  background-image: none;
+  padding-right: none;
 }
 </style>
