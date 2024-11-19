@@ -1,0 +1,26 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:8080" # Expose port 80 from the container to 3000 on the host
+    env_file:
+      - ./frontend/.env
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000" # Expose port 8000
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

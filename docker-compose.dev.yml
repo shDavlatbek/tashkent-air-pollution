@@ -1,0 +1,31 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "80:80" # Expose Vite development server
+    volumes:
+      - ./frontend:/app # Mount frontend code for hot reloading
+      - /app/node_modules # Prevent overwriting node_modules in the container
+    env_file:
+      - ./frontend/.env
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000" # Expose FastAPI development port
+    volumes:
+      - ./backend:/app # Mount backend code for live reloading
+    env_file:
+      - ./backend/.env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
