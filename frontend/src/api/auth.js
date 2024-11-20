@@ -1,9 +1,4 @@
-import axios from "axios";
-
-const api = axios.create({
-  baseURL: process.env.VUE_APP_API_URL, // FastAPI backend URL
-  withCredentials: true, // Ensures cookies are sent with requests
-});
+import { api } from ".";
 
 export const login = async (email, password) => {
   const data = new URLSearchParams();
@@ -26,5 +21,10 @@ export const register = async (full_name, email, password) => {
 
 export const getProtectedRoute = async () => {
   const response = await api.get("/protected-route");
+  return response.data;
+};
+
+export const getMe = async () => {
+  const response = await api.get("/users/me");
   return response.data;
 };
