@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { getProtectedRoute } from "../api/auth";
+import { getMe } from "../api/auth";
 
 export default {
   data() {
@@ -16,10 +16,9 @@ export default {
   },
   async created() {
     try {
-      const response = await getProtectedRoute();
+      const response = await getMe();
       console.log(response);
     } catch (error) {
-      alert("Unauthorized! Redirecting to login.");
       this.$router.push("/login");
     }
   },

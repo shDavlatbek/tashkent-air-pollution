@@ -54,7 +54,7 @@
                       v-model="password" 
                       required
                     />
-                    <div v-if="isInvalid" class="invalid-feedback">Elektron manzil yoki parol notug'ri</div>
+                    <div v-if="isInvalid" class="invalid-feedback">{{ errorMessage }}</div>
                   </div>
                   <div class="col-auto">
                     <a 
@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import { login } from "../api/auth";
+import { login, getMe } from "../api/auth";
 import { IconLogin, IconEye, IconEyeOff } from '@tabler/icons-vue';
 
 export default {
@@ -95,7 +95,8 @@ export default {
       password: "",
       showPassword: false,
       submitLoading: false,
-      isInvalid: false
+      isInvalid: false,
+      errorMessage: null
     };
   },
   methods: {
@@ -103,12 +104,23 @@ export default {
       this.submitLoading = true
       try {
         await login(this.email, this.password);
-        this.$router.push("/authenticated");
+        this.$router.push("/");
       } catch (error) {
         this.isInvalid = true
         this.submitLoading = false
+        this.errorMessage = error.response && error.response.status === 400
+          ? "Elektron manzil yoki parol notug'ri"
+          : "Serverga bog'lanishda xatolik yuzaga keldi";
       }
     },
+  },
+  async created() {
+    try {
+      await getMe();
+      this.$router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
   },
   components: { IconLogin, IconEye, IconEyeOff }
 };
