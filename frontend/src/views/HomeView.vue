@@ -1,26 +1,32 @@
 <template>
-  <div>
-    <h1>Welcome Back!</h1>
-    <p>You're logged in. {{ name }}</p>
+  <div class="page">
+    <HeaderMain />
   </div>
 </template>
 
 <script>
 import { getMe } from "../api/auth";
+import HeaderMain from "@/components/HeaderComponent.vue";
 
 export default {
   data() {
     return {
-      name: localStorage.getItem("full_name"),
+      name: null,
     };
   },
-  async created() {
+  async beforeCreate() {
     try {
       const response = await getMe();
+      this.name = response.full_name;
       console.log(response);
     } catch (error) {
-      this.$router.push("/login");
+      error.response && error.response.status === 401
+          ? this.$router.push("/login")
+          : "";
     }
+  },
+  components: {
+    HeaderMain,
   },
 };
 </script>
