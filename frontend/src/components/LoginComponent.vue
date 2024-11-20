@@ -1,12 +1,16 @@
 <template>
   <div class="d-flex flex-column" style="height: 100vh;">
     <div class="page page-center">
-      <div class="container container-tight py-4" :style="{
-        pointerEvents: submitLoading ? 'none' : 'auto',
-        filter: submitLoading ? 'blur(1px)' : 'none'
-      }">
+      <div 
+        :class="[
+          'container', 'container-tight', 
+          'py-4', 
+          {'pe-none': submitLoading},
+          {'blur1': submitLoading}
+        ]"
+      >
         <div class="text-center mb-4">
-          <a href="javascript:void(0)" class="navbar-brand navbar-brand-autodark" style="height: 100px; width: 100px;">
+          <a href="javascript:void(0)" class="navbar-brand navbar-brand-autodark w100-h100">
             <IconLogin stroke="2" class="w-100 h-100" />
           </a>
         </div>
@@ -56,8 +60,7 @@
                     <a 
                       href="javascript:void(0)" 
                       @click="showPassword = !showPassword" 
-                      class="btn btn-icon"
-                      :style="{border: isInvalid ? '1px solid red' : 'none'}"
+                      :class="['btn', 'btn-icon', {redBorder: isInvalid}]"
                       aria-label="Button"
                     >
                       <IconEye v-if="!showPassword" class="icon" stroke="2" />
@@ -97,11 +100,9 @@ export default {
   },
   methods: {
     async handleLogin() {
-      let res;
       this.submitLoading = true
       try {
-        res = await login(this.email, this.password);
-        localStorage.setItem("full_name", res.full_name);
+        await login(this.email, this.password);
         this.$router.push("/authenticated");
       } catch (error) {
         this.isInvalid = true
@@ -112,10 +113,3 @@ export default {
   components: { IconLogin, IconEye, IconEyeOff }
 };
 </script>
-
-<style scoped>
-.is-invalid{
-  background-image: none;
-  padding-right: none;
-}
-</style>
