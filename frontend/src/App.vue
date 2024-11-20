@@ -1,4 +1,5 @@
 <template>
+  <div class="preload"></div>
   <router-view />
 </template>
 
@@ -10,5 +11,8 @@ export default {
 </script>
 
 <style>
-
+#app{
+  position: relative;
+  z-index: 1;
+}
 </style>
