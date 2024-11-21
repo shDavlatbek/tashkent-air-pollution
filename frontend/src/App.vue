@@ -1,5 +1,4 @@
 <template>
-  <div class="preload"></div>
   <router-view />
 </template>
 
