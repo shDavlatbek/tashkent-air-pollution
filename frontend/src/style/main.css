@@ -20,7 +20,35 @@
   left: 0;
   height: 100vh;
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent background */
-  backdrop-filter: blur(2px); /* Applies blur effect */
+  /* background-color: rgba(255, 255, 255, 0.1); Semi-transparent background */
+  backdrop-filter: blur(10px); /* Applies blur effect */
   z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1; /* Fully visible by default */
+  visibility: visible; /* Ensure it's visible initially */
+  transition: opacity 1s ease, visibility 1s ease; /* Smooth fade-out effect */
 }
+
+.preload.fade-out {
+  opacity: 0; /* Fully transparent during fade-out */
+  visibility: hidden; /* Hides the element after fade-out */
+}
+/* HTML: <div class="loader-custom"></div> */
+.loader-custom {
+  width: 50px;
+  padding: 8px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--tblr-primary);
+  --_m: 
+    conic-gradient(#0000 10%,#000),
+    linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+          mask: var(--_m);
+  -webkit-mask-composite: source-out;
+          mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {to{transform: rotate(1turn)}}
