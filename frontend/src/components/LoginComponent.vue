@@ -104,20 +104,20 @@ export default {
       this.submitLoading = true
       try {
         await login(this.email, this.password);
-        this.$router.push("/");
+        this.$router.replace("/");
       } catch (error) {
         this.isInvalid = true
         this.submitLoading = false
         this.errorMessage = error.response && error.response.status === 400
           ? "Elektron manzil yoki parol notug'ri"
-          : "Serverga bog'lanishda xatolik yuzaga keldi";
+          : "Server bilan bog'lanishda xatolik yuzaga keldi";
       }
     },
   },
   async created() {
     try {
       await getMe();
-      this.$router.push("/");
+      this.$router.replace("/");
     } catch (error) {
       console.log(error);
     }

@@ -1,18 +1,24 @@
 <template>
+  <PreloadDiv :class="[isLoaded ? 'fade-out' : '']" />
   <div class="page">
-    <HeaderMain />
+    <HeaderMain :name="name" />
   </div>
 </template>
 
 <script>
 import { getMe } from "../api/auth";
 import HeaderMain from "@/components/HeaderComponent.vue";
+import PreloadDiv from "@/components/PreloadDiv.vue";
 
 export default {
   data() {
     return {
       name: null,
+      isLoaded: false
     };
+  },
+  mounted() {
+    this.isLoaded = true;
   },
   async beforeCreate() {
     try {
@@ -26,7 +32,7 @@ export default {
     }
   },
   components: {
-    HeaderMain,
+    HeaderMain, PreloadDiv
   },
 };
 </script>
