@@ -51,12 +51,12 @@
                           <IconUserFilled class="icon" stroke="2" />
                         </span>
                         <div class="d-xl-block ps-2">
-                          <div>{{ name }}</div>
+                          <div>{{ full_name }}</div>
                         </div>
                       </a>
                       <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                         <a href="./profile.html" class="dropdown-item">Profile</a>
-                        <router-link class="dropdown-item" @click="logout()" to="/login">
+                        <router-link class="dropdown-item" @click.prevent="handleLogout" to="">
                           <IconLogout class="icon icon-inline me-1" stroke="2" />
                           Chiqish
                         </router-link>
@@ -85,12 +85,12 @@
                       <IconUserFilled class="icon" stroke="2" />
                     </span>
                     <div class="d-xl-block ps-2">
-                      <div>{{ name }}</div>
+                      <div>{{ full_name }}</div>
                     </div>
                   </div>
                   <div class="dropdown-menu">
                     <a href="./profile.html" class="dropdown-item">Profile</a>
-                    <router-link class="dropdown-item" @click="logout()" to="/login">
+                    <router-link class="dropdown-item" @click.prevent="handleLogout" to="">
                       <IconLogout class="icon icon-inline me-1" stroke="2" />
                       Chiqish
                     </router-link>
@@ -110,9 +110,10 @@ import { IconLifebuoy, IconSun, IconMoon, IconUserFilled, IconLogout, IconHome }
 import { logout } from '@/api/auth';
 
 export default {
-  name: 'HeaderMain',
+  name: 'HeaderComponent',
   data() {
     return {
+      full_name: "ASS",
       headerMenu: [
         {
           name: 'Bosh sahifa',
@@ -121,31 +122,30 @@ export default {
         },
         {
           name: 'Gigrogeologik',
-          link: '/login'
+          link: '/geo'
         },
         {
           name: 'Gidromeliorativ',
-          link: '/navbar-help'
+          link: '/melio'
         },
         {
           name: 'Gidrometeorologik',
-          link: '/navbar-help'
+          link: '/meteo'
         }
       ]
     }
-  },
-  props: {
-    name: {
-      type: String, // Тип данных
-      required: true // Указание, что пропс обязателен
-    },
   },
   components: {
     IconLifebuoy, IconSun, IconMoon, IconUserFilled, IconLogout, IconHome
   },
   methods: {
-    logout() {
-      logout();
+    async handleLogout() {
+      try {
+        await logout();
+        this.$router.push("/login");
+      } catch (error) {
+        console.error("Error during logout:", error);
+      }
     },
   },
 }
