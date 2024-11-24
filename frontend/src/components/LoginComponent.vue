@@ -30,6 +30,7 @@
                   v-model="email" 
                   :class="{
                     'form-control': true, 
+                    'required': true, 
                     'is-invalid': isInvalid,
                   }" 
                   @input="isInvalid = false"
@@ -48,6 +49,7 @@
                       :type="showPassword ? 'text' : 'password'" 
                       :class="{
                         'form-control': true, 
+                        'required': true, 
                         'is-invalid': isInvalid,
                       }" 
                       @input="isInvalid = false"
