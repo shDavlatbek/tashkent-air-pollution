@@ -1,7 +1,9 @@
 <template>
     <div class="page">
         <HeaderComponent />
-        <router-view />
+        <div class="page-wrapper">
+            <router-view />
+        </div>
     </div>
 </template>
 

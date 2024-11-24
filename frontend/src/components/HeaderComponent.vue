@@ -45,7 +45,7 @@
                       </a>
                     </div>
                     <div class="nav-item dropdown">
-                      <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown"
+                      <a href="javascript:void(0)" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown"
                         aria-label="Open user menu">
                         <span class="avatar avatar-sm">
                           <IconUserFilled class="icon" stroke="2" />
@@ -55,7 +55,7 @@
                         </div>
                       </a>
                       <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <a href="./profile.html" class="dropdown-item">Profile</a>
+                        <!-- <a href="./profile.html" class="dropdown-item">Profile</a> -->
                         <router-link class="dropdown-item" @click.prevent="handleLogout" to="">
                           <IconLogout class="icon icon-inline me-1" stroke="2" />
                           Chiqish
@@ -89,7 +89,7 @@
                     </div>
                   </div>
                   <div class="dropdown-menu">
-                    <a href="./profile.html" class="dropdown-item">Profile</a>
+                    <!-- <a href="./profile.html" class="dropdown-item">Profile</a> -->
                     <router-link class="dropdown-item" @click.prevent="handleLogout" to="">
                       <IconLogout class="icon icon-inline me-1" stroke="2" />
                       Chiqish
@@ -108,12 +108,13 @@
 <script>
 import { IconLifebuoy, IconSun, IconMoon, IconUserFilled, IconLogout, IconHome } from '@tabler/icons-vue';
 import { logout } from '@/api/auth';
+import { store } from '@/store';
 
 export default {
   name: 'HeaderComponent',
   data() {
     return {
-      full_name: "ASS",
+      full_name: store.user.name,
       headerMenu: [
         {
           name: 'Bosh sahifa',

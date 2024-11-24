@@ -8,6 +8,7 @@ import { getMe } from './api/auth';
 import MainLayout from './layout/MainLayout.vue';
 import PreloadDiv from './components/PreloadDiv.vue';
 import EmptyLayout from './layout/EmptyLayout.vue';
+import { store } from './store';
 
 const layout = {
   main: MainLayout,
@@ -36,11 +37,12 @@ export default {
   },
   methods: {
     async setLayout() {
+      this.currentLayout = PreloadDiv;
       // Handle authentication and layout assignment
       if (this.$route.meta.auth) {
         try {
           const response = await getMe();
-          console.log(response); // Log the user data (optional)
+          store.user.name = response.full_name;
         } catch (error) {
           if (error.response && error.response.status === 401) {
             return this.$router.push('/login');
@@ -48,7 +50,7 @@ export default {
         }
       }
 
-      this.currentLayout = layout[this.$route.meta.layout] || EmptyLayout;
+      this.currentLayout = layout[this.$route.meta.layout] || layout['empty'];
     },
   },
   components: {
