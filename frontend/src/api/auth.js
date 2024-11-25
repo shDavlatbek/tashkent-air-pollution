@@ -24,11 +24,6 @@ export const register = async (full_name, email, password) => {
   return response.data;
 };
 
-export const getProtectedRoute = async () => {
-  const response = await api.get("/protected-route");
-  return response.data;
-};
-
 export const getMe = async () => {
   const response = await api.get("/users/me");
   return response.data;
