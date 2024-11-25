@@ -1,6 +1,6 @@
 import { api } from ".";
 
-export const getApi = async (route, params = {}, method = "GET") => {
+export const reqApi = async (route, params = {}, method = "GET") => {
   try {
     const config = {
       method,
@@ -20,7 +20,7 @@ export const getApi = async (route, params = {}, method = "GET") => {
       throw new Error(`API error: ${response.status} - ${response.statusText}`);
     }
 
-    return response.data; 
+    return response; 
   } catch (error) {
     console.error("API error:", error.message || error);
     throw error;
