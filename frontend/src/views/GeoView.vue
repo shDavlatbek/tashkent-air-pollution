@@ -51,21 +51,13 @@
                 <div class="col-12">
                   <div class="mb-3">
                     <label class="form-label required">Viloyat nomi</label>
-                    <select class="form-select">
-                      <option value="1">Private</option>
-                      <option value="2">Public</option>
-                      <option value="3">Hidden</option>
-                    </select>
+                    <RegionSelect :regions="regions" class="form-select" />
                   </div>
                 </div>
                 <div class="col-12">
                   <div class="mb-3">
                     <label class="form-label required">Tuman nomi</label>
-                    <select class="form-select">
-                      <option value="1">Private</option>
-                      <option value="2">Public</option>
-                      <option value="3">Hidden</option>
-                    </select>
+                    <DistrictSelect :districts="districts" class="form-select" />
                   </div>
                 </div>
                 <div class="col-12">
@@ -159,19 +151,23 @@
 <script>
 import HeaderText from '@/components/HeaderTextComponent.vue';
 import ModalForm from '@/components/ModalFormComponent.vue';
+import RegionSelect from '@/components/RegionSelect.vue';
+import DistrictSelect from '@/components/DistrictSelect.vue';
+import { getRegions } from '@/api/common';
 
 export default {
   data() {
     return {
       title: "Gidrogeologik ma'lumotlar",
       modalId: "hydrogeologic-modal",
-      newWellForm: {
+      addWellForm: {
         name: '',
         region: '',
         district: '',
         address: '',
-
-      }
+      },
+      regions: [],
+      districts: [],
     }
   },
   computed: {
@@ -182,8 +178,13 @@ export default {
     }
   },
   components: {
-    HeaderText, ModalForm
-  }
+    HeaderText, ModalForm, RegionSelect, DistrictSelect,
+  },
+  async mounted() {
+    const regions = await getRegions();
+    this.regions = regions;
+    console.log(regions);
+  },
 }
 
 </script>
