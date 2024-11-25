@@ -1,9 +1,9 @@
 import { reqApi } from "./base";
 
 export const getRegions = async () => {
-  return response = await reqApi.get("/regions");;
+  return await reqApi("/regions");
 };
 
 export const getDistricts = async (region_id) => {
-  return await reqApi.get("/districts", {region_id: region_id});
+  return await reqApi("/districts", {region_id: region_id});
 };
