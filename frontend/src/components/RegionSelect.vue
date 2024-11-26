@@ -1,6 +1,6 @@
 <template>
   <select v-model="localRegion" @change="updateRegion">
-    <option value>---------</option>
+    <option value selected>---------</option>
     <option v-for="region in regions" :key="region.id" :value="region.id">
       {{ region.name }}
     </option>
@@ -20,8 +20,8 @@ export default {
       default: null
     },
     regions: {
-      type: Array,
-      default: () => []
+      type: Object,
+      default: () => {}
     }
   },
   methods: {

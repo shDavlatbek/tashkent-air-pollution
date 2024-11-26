@@ -1,6 +1,6 @@
 <template>
   <select v-model="localDistrict" @change="updateDistrict">
-    <option value>---------</option>
+    <option value selected>---------</option>
     <option v-for="district in districts" :key="district.id" :value="district.id">
       {{ district.name }}
     </option>
@@ -10,10 +10,6 @@
 <script>
 export default {
   props: {
-    regionId: { // The selected region ID passed from parent
-      type: [Number, String],
-      required: true
-    },
     value: { // The selected district ID passed from parent
       type: [Number, String],
       default: null
