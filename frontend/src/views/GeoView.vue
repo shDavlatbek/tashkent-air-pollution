@@ -51,13 +51,13 @@
                 <div class="col-12">
                   <div class="mb-3">
                     <label class="form-label required">Viloyat nomi</label>
-                    <RegionSelect :regions="regions" class="form-select" />
+                    <RegionSelect :regions="regions" @change="changeDistricts" v-model="addWellForm.region" class="form-select" />
                   </div>
                 </div>
                 <div class="col-12">
                   <div class="mb-3">
                     <label class="form-label required">Tuman nomi</label>
-                    <DistrictSelect :districts="districts" class="form-select" />
+                    <DistrictSelect :districts="districts" v-model="addWellForm.district" class="form-select" />
                   </div>
                 </div>
                 <div class="col-12">
@@ -153,7 +153,7 @@ import HeaderText from '@/components/HeaderTextComponent.vue';
 import ModalForm from '@/components/ModalFormComponent.vue';
 import RegionSelect from '@/components/RegionSelect.vue';
 import DistrictSelect from '@/components/DistrictSelect.vue';
-import { getRegions } from '@/api/common';
+import { getDistricts, getRegions } from '@/api/common';
 
 export default {
   data() {
@@ -175,15 +175,18 @@ export default {
       return () => {
         console.log("Form submitted");
       }
-    }
+    },
+  },
+  methods: {
+    async changeDistricts(event) {
+      this.districts = await getDistricts(event.target.value);
+    },
   },
   components: {
     HeaderText, ModalForm, RegionSelect, DistrictSelect,
   },
   async mounted() {
-    const regions = await getRegions();
-    this.regions = regions;
-    console.log(regions);
+    this.regions = await getRegions();
   },
 }
 
