@@ -1,6 +1,5 @@
 <template>
   <select v-model="localDistrict" @change="updateDistrict">
-    <option value selected>---------</option>
     <option v-for="district in districts" :key="district.id" :value="district.id">
       {{ district.name }}
     </option>
