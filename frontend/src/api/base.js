@@ -16,10 +16,6 @@ export const reqApi = async (route, params = {}, method = "GET") => {
 
     const response = await api.request(config);
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status} - ${response.statusText}`);
-    }
-
     return response; 
   } catch (error) {
     console.error("API error:", error.message || error);
