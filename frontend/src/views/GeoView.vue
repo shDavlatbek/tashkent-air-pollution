@@ -1,45 +1,31 @@
 <template>
-  <HeaderText :title="title" :modal-id="modalId" />
+  <HeaderText :title="title" :modal-id="modalId" :on-modal-open="loadForm" />
   <teleport to="body">
     <ModalForm :modal-id="modalId" :modal-title="title" :modal-form-confirm="formHandler">
-      <template v-slot:modal-body>
+      <template #modal-body>
         <div class="modal-body">
           <div class="row">
             <div class="col-lg-6 col-md-12">
-              <div class="mb-3">
-                <label class="form-label required">Qaysi davlat tashkilotiga mansubligi</label>
-                <select class="form-select">
-                  <option value="1">Private</option>
-                  <option value="2">Public</option>
-                  <option value="3">Hidden</option>
-                </select>
-              </div>
+              <SelectField label="Qaysi davlat tashkilotiga mansubligi">
+                <option value="1">Private</option>
+                <option value="2">Public</option>
+                <option value="3">Hidden</option>
+              </SelectField>
             </div>
             <div class="col-lg-6 col-md-12">
-              <div class="mb-3">
-                <label class="form-label required">Kuzatuv qudug'i raqami</label>
-                <input type="number" class="form-control" name="example-text-input" placeholder="Your report name">
-              </div>
+              <InputField label="Kuzatuv qudug'i raqami" :required="true" v-model.number="addWellForm.number" type="number" />
             </div>
             <div class="col-lg-6 col-md-12">
-              <div class="mb-3">
-                <label class="form-label required">Kuzatuv burg'u qudug'ining turi</label>
-                <select class="form-select">
-                  <option value="1">Private</option>
-                  <option value="2">Public</option>
-                  <option value="3">Hidden</option>
-                </select>
-              </div>
+              <SelectField label="Kuzatuv burg'u qudug'ining turi" :required="true" v-model="addWellForm.type">
+                <option v-for="type in wellTypes" :key="type.id" :value="type.id">{{ type.name }}</option>
+              </SelectField>
             </div>
             <div class="col-lg-6 col-md-12">
-              <div class="mb-3">
-                <label class="form-label required">Qaysi stansiya</label>
-                <select class="form-select">
-                  <option value="1">Private</option>
-                  <option value="2">Public</option>
-                  <option value="3">Hidden</option>
-                </select>
-              </div>
+              <SelectField label="Qaysi stansiya">
+                <option value="1">Private</option>
+                <option value="2">Public</option>
+                <option value="3">Hidden</option>
+              </SelectField>
             </div>
           </div>
         </div>
@@ -49,32 +35,37 @@
             <div class="col-lg-6">
               <div class="row">
                 <div class="col-12">
-                  <div class="mb-3">
-                    <label class="form-label required">Viloyat nomi</label>
-                    <RegionSelect :regions="regions" @change="changeDistricts" v-model="addWellForm.region" class="form-select" />
-                  </div>
+                  <SelectField
+                    label="Viloyat nomi"
+                    empty-value="0"
+                    @change="changeDistricts" 
+                    v-model="addWellForm.region" 
+                  >
+                    <option v-for="region in regions" :key="region.id" :value="region.id">
+                      {{ region.name }}
+                    </option>
+                  </SelectField>
                 </div>
                 <div class="col-12">
-                  <div class="mb-3">
-                    <label class="form-label required">Tuman nomi</label>
-                    <DistrictSelect :districts="districts" v-model="addWellForm.district" class="form-select" />
-                  </div>
+                  <SelectField
+                    label="Tuman nomi"
+                    empty-value="0"
+                    v-model="addWellForm.district" 
+                  >
+                    <option v-for="district in districts" :key="district.id" :value="district.id">
+                      {{ district.name }}
+                    </option>
+                  </SelectField>
                 </div>
                 <div class="col-12">
-                  <div class="mb-3">
-                    <label class="form-label required">Mo'ljal</label>
-                    <input type="text" class="form-control">
-                  </div>
+                  <InputField label="Mo'ljal" />
                 </div>
                 <div class="col-12">
-                  <div class="mb-3">
-                    <label class="form-label required">Joylashuv o'rni</label>
-                    <select class="form-select">
-                      <option value="1">Private</option>
-                      <option value="2">Public</option>
-                      <option value="3">Hidden</option>
-                    </select>
-                  </div>
+                  <SelectField label="Joylashuv o'rni">
+                    <option value="1">Private</option>
+                    <option value="2">Public</option>
+                    <option value="3">Hidden</option>
+                  </SelectField>
                 </div>
               </div>
             </div>
@@ -86,58 +77,66 @@
               <label class="form-label">Shimoliy kenglik</label>
               <div class="row">
                 <div class="col-4">
-                  <div class="input-group mb-3">
-                    <input type="number" class="form-control" autocomplete="off">
-                    <span class="input-group-text">°</span>
-                  </div>
+                  <InputField class="input-group" type="number"> 
+                    <template #after>
+                      <span class="input-group-text">°</span>
+                    </template>
+                  </InputField>
                 </div>
                 <div class="col-4">
-                  <div class="input-group mb-3">
-                    <input type="number" class="form-control" autocomplete="off">
-                    <span class="input-group-text">'</span>
-                  </div>
+                  <InputField class="input-group" type="number"> 
+                    <template #after>
+                      <span class="input-group-text">'</span>
+                    </template>
+                  </InputField>
                 </div>
                 <div class="col-4">
-                  <div class="input-group mb-3">
-                    <input type="number" class="form-control" autocomplete="off">
-                    <span class="input-group-text">"</span>
-                  </div>
+                  <InputField class="input-group" type="number"> 
+                    <template #after>
+                      <span class="input-group-text">"</span>
+                    </template>
+                  </InputField>
                 </div>
               </div>
               <label class="form-label">Sharqiy uzunlik</label>
               <div class="row">
                 <div class="col-4">
-                  <div class="input-group mb-3">
-                    <input type="number" class="form-control" autocomplete="off">
-                    <span class="input-group-text">°</span>
-                  </div>
+                  <InputField class="input-group" type="number"> 
+                    <template #after>
+                      <span class="input-group-text">°</span>
+                    </template>
+                  </InputField>
                 </div>
                 <div class="col-4">
-                  <div class="input-group mb-3">
-                    <input type="number" class="form-control" autocomplete="off">
-                    <span class="input-group-text">'</span>
-                  </div>
+                  <InputField class="input-group" type="number"> 
+                    <template #after>
+                      <span class="input-group-text">'</span>
+                    </template>
+                  </InputField>
                 </div>
                 <div class="col-4">
-                  <div class="input-group mb-3">
-                    <input type="number" class="form-control" autocomplete="off">
-                    <span class="input-group-text">"</span>
-                  </div>
+                  <InputField class="input-group" type="number"> 
+                    <template #after>
+                      <span class="input-group-text">"</span>
+                    </template>
+                  </InputField>
                 </div>
               </div>
               <label class="form-label">[x; y]</label>
               <div class="row">
                 <div class="col-4">
-                  <div class="input-group mb-3">
-                    <input type="number" class="form-control" autocomplete="off">
-                    <span class="input-group-text">x</span>
-                  </div>
+                  <InputField class="input-group" type="number"> 
+                    <template #after>
+                      <span class="input-group-text">x</span>
+                    </template>
+                  </InputField>
                 </div>
                 <div class="col-4">
-                  <div class="input-group mb-3">
-                    <input type="number" class="form-control" autocomplete="off">
-                    <span class="input-group-text">y</span>
-                  </div>
+                  <InputField class="input-group" type="number"> 
+                    <template #after>
+                      <span class="input-group-text">y</span>
+                    </template>
+                  </InputField>
                 </div>
               </div>
             </div>
@@ -151,8 +150,8 @@
 <script>
 import HeaderText from '@/components/HeaderTextComponent.vue';
 import ModalForm from '@/components/ModalFormComponent.vue';
-import RegionSelect from '@/components/RegionSelect.vue';
-import DistrictSelect from '@/components/DistrictSelect.vue';
+import InputField from '@/components/InputField.vue';
+import SelectField from '@/components/SelectField.vue';
 import { getDistricts, getRegions } from '@/api/common';
 
 export default {
@@ -161,11 +160,13 @@ export default {
       title: "Gidrogeologik ma'lumotlar",
       modalId: "hydrogeologic-modal",
       addWellForm: {
-        name: '',
+        number: '',
         region: '',
         district: '',
         address: '',
       },
+      formLoaded: false,
+      wellTypes: {},
       regions: [],
       districts: [],
     }
@@ -176,6 +177,16 @@ export default {
         console.log("Form submitted");
       }
     },
+    loadForm() {
+      return async () => {
+        if (this.formLoaded) {
+          return;
+        } else {
+          this.regions = await getRegions();
+          this.formLoaded = true;
+        }
+      }
+    }
   },
   methods: {
     async changeDistricts(event) {
@@ -183,10 +194,10 @@ export default {
     },
   },
   components: {
-    HeaderText, ModalForm, RegionSelect, DistrictSelect,
+    HeaderText, ModalForm, InputField, SelectField
   },
   async mounted() {
-    this.regions = await getRegions();
+    
   },
 }
 
