@@ -7,16 +7,18 @@
             {{ title }}
           </h2>
         </div>
-        <div class="col-auto ms-auto d-print-none">
+        <div class="col-auto ms-auto d-print-none" v-if="modalId">
           <div class="btn-list">
             <a href="javascript:void(0)" class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal"
-              :data-bs-target="'#'+modalId">
+              :data-bs-target="'#'+modalId"
+              @click="onModalOpen">
               <IconPlus class="icon" stroke="2" />
               Qo'shish
             </a>
             <a href="javascript:void(0)" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" 
               :data-bs-target="'#'+modalId"
-              aria-label="Qo'shish">
+              aria-label="Qo'shish"
+              @click="onModalOpen">
               <IconPlus class="icon" stroke="2" />
             </a>
           </div>
@@ -39,7 +41,11 @@ export default {
     },
     modalId: {
       type: String,
-      required: true
+      required: false
+    },
+    onModalOpen: {
+      type: Function,
+      required: false
     }
   },
   components: {
