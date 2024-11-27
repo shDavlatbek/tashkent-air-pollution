@@ -19,7 +19,7 @@ export default {
   name: 'App',
   data() {
     return {
-      currentLayout: PreloadDiv, // Default to PreloadDiv while loading
+      currentLayout: PreloadDiv
     };
   },
   async created() {
@@ -43,20 +43,23 @@ export default {
         try {
           const response = await getMe();
           store.user.name = response.full_name;
-        } catch (error) {
+          this.currentLayout = layout[this.$route.meta.layout] || layout['empty'];
+        } catch (error) { 
           if (error.response && error.response.status === 401) {
             return this.$router.push('/login');
+          }else{
+            return this.$router.push('/500');
           }
         }
+      } else {
+        this.currentLayout = layout[this.$route.meta.layout] || layout['empty'];
       }
-
-      this.currentLayout = layout[this.$route.meta.layout] || layout['empty'];
     },
   },
   components: {
     MainLayout,
     PreloadDiv,
-    EmptyLayout,
+    EmptyLayout
   },
 };
 </script>
