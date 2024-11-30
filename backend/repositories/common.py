@@ -1,11 +1,18 @@
-# You can define your repositories here
-
-from models.common import Region, District
+from models.common import Region, District, Location, Coordinate
 from utils.repository import SQLAlchemyRepository
 
 
 class RegionRepository(SQLAlchemyRepository):
     model = Region
 
+
 class DistrictRepository(SQLAlchemyRepository):
     model = District
+    
+
+class LocationRepository(SQLAlchemyRepository):
+    model = Location
+    
+
+class CoordinateRepository(SQLAlchemyRepository):
+    model = Coordinate
