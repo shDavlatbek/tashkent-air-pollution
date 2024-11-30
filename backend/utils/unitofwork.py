@@ -2,13 +2,22 @@ from abc import ABC, abstractmethod
 from typing import Type
 
 from db.db import async_session_maker
-from repositories.common import RegionRepository, DistrictRepository
+from repositories.common import RegionRepository, DistrictRepository, LocationRepository, CoordinateRepository
+from repositories.geo import GeoStationRepository, GeoWellRepository, GeoOrganizationRepository, GeoWellTypeRepository
 
 
 # https://github1s.com/cosmicpython/code/tree/chapter_06_uow
 class IUnitOfWork(ABC):
     regions: Type[RegionRepository]
     districts: Type[DistrictRepository]
+    coordinate: Type[CoordinateRepository]
+    location: Type[LocationRepository]
+    
+    # Geo
+    geo_well: Type[GeoWellRepository]
+    geo_organization: Type[GeoOrganizationRepository]
+    geo_well_type: Type[GeoWellTypeRepository]
+    geo_station: Type[GeoStationRepository]
     
     @abstractmethod
     def __init__(self):
@@ -39,6 +48,14 @@ class UnitOfWork:
         self.session = self.session_factory()
         self.regions = RegionRepository(self.session)
         self.districts = DistrictRepository(self.session)
+        self.coordinate = CoordinateRepository(self.session)
+        self.location = LocationRepository(self.session)
+        
+        # Geo
+        self.geo_well = GeoWellRepository(self.session)
+        self.geo_organization = GeoOrganizationRepository(self.session)
+        self.geo_well_type = GeoWellTypeRepository(self.session)
+        self.geo_station = GeoStationRepository(self.session) 
 
     async def __aexit__(self, *args):
         await self.rollback()
