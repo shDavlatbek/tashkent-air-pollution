@@ -6,14 +6,14 @@ from schemas.common import CoordinateAdd
 
 class AddGeoWell(BaseModel):
     number: int
-    region: Optional[int]
-    district: Optional[int]
-    address: Optional[str]
-    well_type: Optional[int]
-    organization: Optional[int]
-    location: Optional[int]
-    station: Optional[int]
-    coordinate: CoordinateAdd
+    region: Optional[int] = None
+    district: Optional[int] = None
+    address: Optional[str] = None
+    well_type: Optional[int] = None
+    organization: Optional[int] = None
+    location: Optional[int] = None
+    station: Optional[int] = None
+    coordinate: Optional[CoordinateAdd]
     
 
 class GeoWell(BaseModel):

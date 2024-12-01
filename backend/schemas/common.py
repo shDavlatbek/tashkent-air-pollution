@@ -28,14 +28,14 @@ class  NameField(BaseModel):
         
 
 class CoordinateAdd(BaseModel):
-    latitude_degree: Optional[float]
-    latitude_minute: Optional[float]
-    latitude_second: Optional[float]
-    longitude_degree: Optional[float]
-    longitude_minute: Optional[float]
-    longitude_second: Optional[float]
-    x: Optional[float]
-    y: Optional[float]
+    latitude_degree: Optional[float] = None
+    latitude_minute: Optional[float] = None
+    latitude_second: Optional[float] = None
+    longitude_degree: Optional[float] = None
+    longitude_minute: Optional[float] = None
+    longitude_second: Optional[float] = None
+    x: Optional[float] = None
+    y: Optional[float] = None
     
     class Config:
         from_attributes = True
