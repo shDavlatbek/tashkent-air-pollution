@@ -1,7 +1,7 @@
 <template>
   <HeaderText :title="title" :modal-id="modalId" :on-modal-open="loadForm" />
   <teleport to="body">
-    <ModalForm :modal-id="modalId" :modal-title="title" :modal-form-confirm="formHandler">
+    <ModalForm :modal-id="modalId" :modal-title="title" :modal-form-confirm="formHandler" ref="modalForm">
       <template #modal-body>
         <div class="modal-body">
           <div class="row">
@@ -79,21 +79,21 @@
               <label class="form-label">Shimoliy kenglik</label>
               <div class="row">
                 <div class="col-4">
-                  <InputField class="input-group" type="number" v-model="addWellForm.coordinates.latitude.degree"> 
+                  <InputField class="input-group" type="number" v-model="addWellForm.coordinate.latitude_degree"> 
                     <template #after>
                       <span class="input-group-text">°</span>
                     </template>
                   </InputField>
                 </div>
                 <div class="col-4">
-                  <InputField class="input-group" type="number" v-model="addWellForm.coordinates.latitude.minute"> 
+                  <InputField class="input-group" type="number" v-model="addWellForm.coordinate.latitude_minute"> 
                     <template #after>
                       <span class="input-group-text">'</span>
                     </template>
                   </InputField>
                 </div>
                 <div class="col-4">
-                  <InputField class="input-group" type="number" v-model="addWellForm.coordinates.latitude.second"> 
+                  <InputField class="input-group" type="number" v-model="addWellForm.coordinate.latitude_second"> 
                     <template #after>
                       <span class="input-group-text">"</span>
                     </template>
@@ -103,21 +103,21 @@
               <label class="form-label">Sharqiy uzunlik</label>
               <div class="row">
                 <div class="col-4">
-                  <InputField class="input-group" type="number" v-model="addWellForm.coordinates.longitude.degree"> 
+                  <InputField class="input-group" type="number" v-model="addWellForm.coordinate.longitude_degree"> 
                     <template #after>
                       <span class="input-group-text">°</span>
                     </template>
                   </InputField>
                 </div>
                 <div class="col-4">
-                  <InputField class="input-group" type="number" v-model="addWellForm.coordinates.longitude.minute"> 
+                  <InputField class="input-group" type="number" v-model="addWellForm.coordinate.longitude_minute"> 
                     <template #after>
                       <span class="input-group-text">'</span>
                     </template>
                   </InputField>
                 </div>
                 <div class="col-4">
-                  <InputField class="input-group" type="number" v-model="addWellForm.coordinates.longitude.second">
+                  <InputField class="input-group" type="number" v-model="addWellForm.coordinate.longitude_second">
                     <template #after>
                       <span class="input-group-text">"</span>
                     </template>
@@ -127,14 +127,14 @@
               <label class="form-label">[x; y]</label>
               <div class="row">
                 <div class="col-4">
-                  <InputField class="input-group" type="number" v-model="addWellForm.coordinates.x"> 
+                  <InputField class="input-group" type="number" v-model="addWellForm.coordinate.x"> 
                     <template #after>
                       <span class="input-group-text">x</span>
                     </template>
                   </InputField>
                 </div>
                 <div class="col-4">
-                  <InputField class="input-group" type="number" v-model="addWellForm.coordinates.y"> 
+                  <InputField class="input-group" type="number" v-model="addWellForm.coordinate.y"> 
                     <template #after>
                       <span class="input-group-text">y</span>
                     </template>
@@ -149,19 +149,20 @@
   </teleport>
 
   <teleport to="body">
-    <ModalDanger 
+    <ModalAlert 
       :title="modalTitle" 
       :description="modalDesc"
-      ref="dangerModal"
+      ref="modalAlert"
+      :type="modalType"
     >
       <template #buttons>
         <div class="col">
-          <button class="btn w-100" data-bs-dismiss="modal">
+          <button class="btn w-100" data-bs-dismiss="modal" data-bs-target="#modal-alert">
             Tushinarli
           </button>
         </div>
       </template>
-    </ModalDanger>
+    </ModalAlert>
   </teleport>
 </template>
 
@@ -170,8 +171,9 @@ import HeaderText from '@/components/HeaderTextComponent.vue';
 import ModalForm from '@/components/ModalFormComponent.vue';
 import InputField from '@/components/InputField.vue';
 import SelectField from '@/components/SelectField.vue';
-import ModalDanger from '@/components/ModalDanger.vue';
+import ModalAlert from '@/components/ModalAlert.vue';
 import { getDistricts, getRegions } from '@/api/common';
+import { addNewWell, getNewWellForm } from '@/api/geo';
 import { ref } from 'vue';
 
 export default {
@@ -188,19 +190,15 @@ export default {
         organization: null,
         location: null,
         station: null,
-        coordinates: {
-          latitude: {
-            degree: null,
-            minute: null,
-            second: null,
-          },
-          longitude: {
-            degree: null,
-            minute: null,
-            second: null,
-          },
+        coordinate: {
+          latitude_degree: null,
+          latitude_minute: null,
+          latitude_second: null,
+          longitude_degree: null,
+          longitude_minute: null,
+          longitude_second: null,
           x: null,
-          y: null,
+          y: null
         }
       },
       formLoaded: false,
@@ -210,24 +208,18 @@ export default {
       stations: {},
       regions: {},
       districts: {},
-      errorMes: false,
+      modalType: null,
       modalDesc: '',
       modalTitle: ''
     }
   },
   computed: {
-    formHandler() {
-      return () => {
-        console.log("Form submitted");
-        console.log(this.addWellForm);
-      }
-    },
-    
   },
   setup() {
-    const dangerModal = ref();
+    const modalAlert = ref();
+    const modalForm = ref();
     return {
-      dangerModal
+      modalAlert, modalForm
     }
   },
   methods: {
@@ -235,10 +227,27 @@ export default {
       try {
         this.districts = await getDistricts(event.target.value);
       } catch (error) {
-        this.dangerModal.openModal();
+        this.modalAlert.openModal();
         this.modalTitle = "Tumanlarni yuklashda xatolik yuzaga keldi";
         this.modalDesc = `Xato xabari: ${error.message}`;
-        this.errorMes = true;
+        this.modalType = 'danger';
+      }
+    },
+    async formHandler() {
+      console.log("Form submitted");
+      try {
+        await addNewWell(JSON.stringify(this.addWellForm));
+        this.modalForm.closeModal();
+        this.modalAlert.openModal();
+        this.modalTitle = "Ma'lumotlar muvaffaqiyatli saqlandi";
+        this.modalDesc = ""
+        this.modalType = 'success';
+      } catch (error) {
+        console.log(error);
+        this.modalAlert.openModal();
+        this.modalTitle = "Ma'lumotlarni saqlashda xatolik yuzaga keldi";
+        this.modalDesc = `Xato xabari: ${error.message}<br>Url: ${error.config.url}`;
+        this.modalType = 'danger'; 
       }
     },
     async loadForm() {
@@ -247,21 +256,24 @@ export default {
       } else {
         try {
           this.regions = await getRegions();
-          // const response = await getNewWellForm();
-          // this.wellTypes = response.well_types;
+          const response = await getNewWellForm();
+          this.wellTypes = response.well_types;
+          this.organizations = response.organizations;
+          this.locations = response.locations;
+          this.stations = response.stations;
         } catch (error) {
           console.log(error);
           this.modalTitle = "Ma'lumotlarni yuklashda xatolik yuzaga keldi";
           this.dangerModal.openModal();
           this.modalDesc = `Xato xabari: ${error.message}<br>Url: ${error.config.url}`;
-          this.errorMes = true;
+          this.modalType = 'danger';
         }
         
       }
     }
   },
   components: {
-    HeaderText, ModalForm, InputField, SelectField, ModalDanger
+    HeaderText, ModalForm, InputField, SelectField, ModalAlert
   },
   async mounted() {
     

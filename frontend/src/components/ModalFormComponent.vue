@@ -4,19 +4,19 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{ modalTitle }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" id="close-modal-form" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <form>
+        <form @submit.prevent="handleSubmit">
           <slot name="modal-body"></slot>
           <div class="modal-footer">
-            <a href="javascript:void(0)" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+            <button class="btn btn-link link-secondary" data-bs-dismiss="modal">
               Bekor qilish
-            </a>
+            </button>
             <input type="reset" class="btn ms-auto" value="Tozalash" />
-            <a href="javascript:void(0)" @click="modalFormConfirm" class="btn btn-primary" data-bs-dismiss="modal">
+            <button type="submit" class="btn btn-primary">
               <IconPlus class="icon" stroke="2" />
               Qo'shish
-            </a>
+            </button>
           </div>
         </form>
       </div>
@@ -26,10 +26,19 @@
 
 <script>
 import { IconPlus } from '@tabler/icons-vue';
+import { Modal } from 'bootstrap';
 
 
 export default {
   name: 'ModalForm',
+  data() {
+    return {
+      modalInstance: null
+    };
+  },
+  mounted() {
+    this.modalInstance = Modal.getOrCreateInstance(`#${this.modalId}`)
+  },
   props: {
     modalId: {
       type: String,
@@ -46,6 +55,23 @@ export default {
   },
   components: {
     IconPlus
+  },
+  methods: {
+    async handleSubmit(event) {
+      const form = event.target;
+      if (form.checkValidity()) {
+        await this.modalFormConfirm();
+        form.reset();
+      } else {
+        form.reportValidity();
+      }
+    },
+    openModal() {
+      this.modalInstance.show();
+    },
+    closeModal(){
+      document.getElementById('close-modal-form').click();
+    }
   }
 }
 
