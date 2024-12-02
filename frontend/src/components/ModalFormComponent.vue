@@ -71,6 +71,10 @@ export default {
     },
     closeModal(){
       document.getElementById('close-modal-form').click();
+    },
+    resetForm() {
+      const form = document.querySelector(`#${this.modalId} form`);
+      form.reset();
     }
   }
 }

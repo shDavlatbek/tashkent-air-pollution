@@ -25,11 +25,11 @@
                 </tr>
               </thead>
               <tbody class="table-tbody">
-                <tr v-for="well in wells" :key="well.id">
-                  <td class="sort-number"><router-link :to="`/geo/${well.number}`">{{ well.number }}</router-link></td>
-                  <td class="sort-station">{{ well.station ? well.station.name : noInfoMessage }}</td>
-                  <td class="sort-region">{{ well.region ? well.region.name : noInfoMessage }}</td>
-                  <td class="sort-district">{{ well.district ? well.district.name : noInfoMessage }}</td>
+                <tr class="table-row" v-for="(well, index) in wells" :key="index" @click="navigateToGeoSingle(well.number)">
+                  <td class="sort-number">{{ well?.number }}</td>
+                  <td class="sort-station">{{ well?.station ? well?.station.name : noInfoMessage }}</td>
+                  <td class="sort-region">{{ well?.region ? well?.region.name : noInfoMessage }}</td>
+                  <td class="sort-district">{{ well?.district ? well?.district.name : noInfoMessage }}</td>
                   <td class="sort-progress" data-progress="30">
                     <div class="row align-items-center">
                       <div class="col-12 col-lg-auto">30%</div>
@@ -189,7 +189,7 @@
     <ModalAlert :title="modalTitle" :description="modalDesc" ref="modalAlert" :type="modalType">
       <template #buttons>
         <div class="col">
-          <button class="btn w-100" data-bs-dismiss="modal" data-bs-target="#modal-alert">
+          <button class="btn w-100" @click="modalOnCloseFunc" data-bs-dismiss="modal" data-bs-target="#modal-alert">
             Tushinarli
           </button>
         </div>
@@ -242,6 +242,7 @@ export default {
       regions: {},
       districts: {},
       wells: {},
+      modalOnCloseFunc: null,
       list: null,
       searchQuery: '',
       modalType: null,
@@ -274,17 +275,25 @@ export default {
       console.log("Form submitted");
       try {
         await addNewWell(JSON.stringify(this.addWellForm));
+        this.modalForm.resetForm();
         this.modalForm.closeModal();
         this.modalAlert.openModal();
         this.modalTitle = "Ma'lumotlar muvaffaqiyatli qo'shildi";
         this.modalDesc = ""
         this.modalType = 'success';
+        setTimeout(() => {
+          this.$router.go();
+        }, 2000);
+        this.modalOnCloseFunc = () => {this.$router.go();};
       } catch (error) {
         console.log(error);
+        this.modalForm.resetForm();
+        this.modalForm.closeModal();
         this.modalAlert.openModal();
         this.modalTitle = "Ma'lumotlarni saqlashda xatolik yuzaga keldi";
-        this.modalDesc = `Xato xabari: ${error.message}<br>Url: ${error.config.url}`;
+        this.modalDesc = `Xato xabari: ${error?.message}<br>Url: ${error?.config?.url}`;
         this.modalType = 'danger'; 
+        this.modalOnCloseFunc = () => {};
       }
     },
     async loadForm() {
@@ -304,7 +313,24 @@ export default {
           this.dangerModal.openModal();
           this.modalDesc = `Xato xabari: ${error.message}<br>Url: ${error.config.url}`;
           this.modalType = 'danger';
+          this.modalOnCloseFunc = () => {};
         }
+      }
+    },
+    initializeList() {
+      const tableGeo = document.getElementById('table-geo');
+      if (tableGeo) {
+        if (!this.list) {
+          this.list = new List('table-geo', {
+            sortClass: 'table-sort',
+            listClass: 'table-tbody',
+            valueNames: ['sort-number', 'sort-station', 'sort-region', 'sort-district'],
+          });
+        } else {
+          this.list.reIndex();
+        }
+      } else {
+        console.error("Element #table-geo not found!");
       }
     },
     updateSearch() {
@@ -312,12 +338,8 @@ export default {
         this.list.search(this.searchQuery);
       }
     },
-    initList() {
-      this.list = new List("table-geo", {
-        sortClass: 'table-sort',
-        listClass: 'table-tbody',
-        valueNames: ["sort-number", "sort-station", "sort-region", "sort-district"],
-      });
+    navigateToGeoSingle(number) {
+      this.$router.push({ name: "GeoSingle", params: { number } });
     },
   },
   components: {
@@ -326,21 +348,20 @@ export default {
   async mounted() {
     try {
       this.wells = await getWells();
-      setTimeout(() => {
-        this.initList();
-      }, 500);
+      await this.$nextTick();
+      this.initializeList();
     } catch (error) {
       console.log(error);
       this.modalAlert.openModal();
       this.modalTitle = "Ma'lumotlarni yuklashda xatolik yuzaga keldi";
-      if( error.message ){
-        this.modalDesc = `Xato xabari: ${error.message}<br>Url: ${error.config.url}`;
+      if( error.message && error.config ){
+        this.modalDesc = `Xato xabari: ${error.message}<br>Url: ${error?.config?.url}`;
       } else {
         this.modalDesc = `Xato xabari: ${error}`;
       }
       this.modalType = 'danger';
+      this.modalOnCloseFunc = () => {};
     }
-    
   },
 }
 
