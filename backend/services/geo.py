@@ -44,14 +44,17 @@ class GeoService:
     async def get_well(self, uow: IUnitOfWork, well_id: int):
         async with uow:
             well = await uow.geo_well.find_one(id=well_id)
-            well.coordinate = await uow.coordinate.find_one(id=well.coordinate)
-            well.station = await uow.geo_station.find_one(id=well.station) if well.station else None
-            well.organization = await uow.geo_organization.find_one(id=well.organization) if well.organization else None
-            well.region = await uow.regions.find_one(id=well.region) if well.region else None
-            well.district = await uow.districts.find_one(id=well.district) if well.district else None
-            well.well_type = await uow.geo_well_type.find_one(id=well.well_type) if well.well_type else None
-            well.location = await uow.location.find_one(id=well.location) if well.location else None
-            return well
+            if well:
+                well.coordinate = await uow.coordinate.find_one(id=well.coordinate)
+                well.station = await uow.geo_station.find_one(id=well.station) if well.station else None
+                well.organization = await uow.geo_organization.find_one(id=well.organization) if well.organization else None
+                well.region = await uow.regions.find_one(id=well.region) if well.region else None
+                well.district = await uow.districts.find_one(id=well.district) if well.district else None
+                well.well_type = await uow.geo_well_type.find_one(id=well.well_type) if well.well_type else None
+                well.location = await uow.location.find_one(id=well.location) if well.location else None
+                return well
+            else:
+                return None
     
     async def edit_well(self, uow: IUnitOfWork, well_id: int, well: AddGeoWell):
         well_dict = well.model_dump()
