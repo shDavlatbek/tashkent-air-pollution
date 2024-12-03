@@ -25,7 +25,7 @@
                 </tr>
               </thead>
               <tbody class="table-tbody">
-                <tr class="table-row" v-for="(well, index) in wells" :key="index" @click="navigateToGeoSingle(well.number)">
+                <tr class="table-row" v-for="(well, index) in wells" :key="index" @click="navigateToGeoSingle(well.id)">
                   <td class="sort-number">{{ well?.number }}</td>
                   <td class="sort-station">{{ well?.station ? well?.station.name : noInfoMessage }}</td>
                   <td class="sort-region">{{ well?.region ? well?.region.name : noInfoMessage }}</td>
@@ -338,8 +338,8 @@ export default {
         this.list.search(this.searchQuery);
       }
     },
-    navigateToGeoSingle(number) {
-      this.$router.push({ name: "GeoSingle", params: { number } });
+    navigateToGeoSingle(id) {
+      this.$router.push({ name: "GeoSingle", params: { id } });
     },
   },
   components: {

@@ -11,3 +11,7 @@ export const addNewWell = async (data) => {
 export const getWells = async () => {
   return (await reqApi("/geo/")).data;
 };
+
+export const getWell = async (id) => {
+  return (await reqApi(`/geo/${id}`)).data;
+};

@@ -39,3 +39,12 @@ async def get_wells(
     for well in wells:
         res.append(await GeoService().get_well(uow, well.id))
     return res
+
+
+@router.get("/{id}")
+async def get_well(
+    uow: UOWDep,
+    id: int,
+    user=Depends(fastapi_users.current_user(active=True))
+):
+    return await GeoService().get_well(uow, id)
