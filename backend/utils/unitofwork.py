@@ -3,7 +3,10 @@ from typing import Type
 
 from db.db import async_session_maker
 from repositories.common import RegionRepository, DistrictRepository, LocationRepository, CoordinateRepository
-from repositories.geo import GeoStationRepository, GeoWellRepository, GeoOrganizationRepository, GeoWellTypeRepository
+from repositories.geo import \
+    GeoStationRepository, GeoWellRepository, \
+    GeoOrganizationRepository, GeoWellTypeRepository, \
+    ParameterNameRepository, ParameterRepository
 
 
 # https://github1s.com/cosmicpython/code/tree/chapter_06_uow
@@ -14,6 +17,8 @@ class IUnitOfWork(ABC):
     location: Type[LocationRepository]
     
     # Geo
+    parameter_name: Type[ParameterNameRepository]
+    parameter: Type[ParameterRepository]
     geo_well: Type[GeoWellRepository]
     geo_organization: Type[GeoOrganizationRepository]
     geo_well_type: Type[GeoWellTypeRepository]
@@ -53,6 +58,8 @@ class UnitOfWork:
         
         # Geo
         self.geo_well = GeoWellRepository(self.session)
+        self.parameter_name = ParameterNameRepository(self.session)
+        self.parameter = ParameterRepository(self.session)
         self.geo_organization = GeoOrganizationRepository(self.session)
         self.geo_well_type = GeoWellTypeRepository(self.session)
         self.geo_station = GeoStationRepository(self.session) 

@@ -27,6 +27,10 @@ class  NameField(BaseModel):
         from_attributes = True
         
 
+class  NameFieldAdd(BaseModel):
+    name: str
+
+
 class CoordinateAdd(BaseModel):
     latitude_degree: Optional[float] = None
     latitude_minute: Optional[float] = None

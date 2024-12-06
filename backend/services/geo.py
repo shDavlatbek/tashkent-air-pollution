@@ -1,5 +1,5 @@
-from schemas.common import CoordinateAdd
-from schemas.geo import AddGeoWell
+from schemas.common import CoordinateAdd, NameFieldAdd
+from schemas.geo import AddGeoWell, Parameter
 from utils.unitofwork import IUnitOfWork
 
 
@@ -38,8 +38,7 @@ class GeoService:
 
     async def get_wells(self, uow: IUnitOfWork):
         async with uow:
-            wells = await uow.geo_well.find_all()
-            return wells
+            return await uow.geo_well.find_all()
         
     async def get_well(self, uow: IUnitOfWork, well_id: int):
         async with uow:
@@ -60,4 +59,47 @@ class GeoService:
         well_dict = well.model_dump()
         async with uow:
             await uow.geo_well.edit_one(well_id, well_dict)
+            await uow.commit()
+            
+            
+class ParameterNameService:
+    async def add_parameter(self, uow: IUnitOfWork, parameter_name: NameFieldAdd):
+        parameter_dict = parameter_name.model_dump()
+        async with uow:
+            parameter_id = await uow.parameter_name.add_one(parameter_dict)
+            await uow.commit()
+            return parameter_id
+        
+    async def get_parameters(self, uow: IUnitOfWork):
+        async with uow:
+            return await uow.parameter_name.find_all()
+
+    
+    async def edit_parameter(self, uow: IUnitOfWork, parameter_id: int, parameter_name: NameFieldAdd):
+        parameter_name_dict = parameter_name.model_dump()
+        async with uow:
+            await uow.parameter_name.edit_one(parameter_id, parameter_name_dict)
+            await uow.commit()
+            
+
+class ParameterService:
+    async def add_parameter(self, uow: IUnitOfWork, parameter: Parameter):
+        parameter_dict = parameter.model_dump()
+        async with uow:
+            parameter_id = await uow.parameter.add_one(parameter_dict)
+            await uow.commit()
+            return parameter_id
+        
+    async def get_parameters(self, uow: IUnitOfWork, filters):
+        async with uow:
+            if filters:
+                return await uow.parameter.find_all(**filters)
+            else:
+                return await uow.parameter.find_all()
+
+    
+    async def edit_parameter(self, uow: IUnitOfWork, parameter_id: int, parameter: Parameter):
+        parameter_dict = parameter.model_dump()
+        async with uow:
+            await uow.parameter.edit_one(parameter_id, parameter_dict)
             await uow.commit()

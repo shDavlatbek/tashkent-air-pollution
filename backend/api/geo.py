@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends
+from datetime import datetime
+from fastapi import APIRouter, Depends, Query
 from api.auth import fastapi_users
 
 from api.dependencies import UOWDep
-from services.geo import GeoService
-from schemas.geo import AddGeoWell
+from services.geo import GeoService, ParameterService
+from schemas.geo import AddGeoWell, Parameter, ParameterQuery, ParameterAdd
+from typing import Annotated, Optional
 
 
 router = APIRouter(
@@ -39,6 +41,37 @@ async def get_wells(
     for well in wells:
         res.append(await GeoService().get_well(uow, well.id))
     return res
+
+
+@router.get("/parameter")
+async def  get_parameters(
+    uow: UOWDep,
+    filters: Annotated[ParameterQuery, Query()],
+    user=Depends(fastapi_users.current_user(active=True))
+):
+    filters = filters.model_dump(exclude_none=True)
+    print(filters)
+    return await ParameterService().get_parameters(uow, filters)
+
+
+@router.post("/parameter/add")
+async def  add_parameter(
+    uow: UOWDep,
+    parameter: ParameterAdd,
+    user=Depends(fastapi_users.current_user(active=True))
+):
+    return {"parameter_id": await ParameterService().add_parameter(uow, parameter)}
+
+
+@router.post("/parameter/edit")
+async def  edit_parameter(
+    uow: UOWDep,
+    parameter_id: int,
+    parameter: ParameterAdd,
+    user=Depends(fastapi_users.current_user(active=True))
+):  
+    await ParameterService().edit_parameter(uow, parameter_id, parameter)
+    return {"ok": True}
 
 
 @router.get("/{id}")

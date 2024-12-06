@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from db.db import Base
 from schemas.common import NameField
-from schemas.geo import GeoWell
+from schemas.geo import GeoWell, Parameter
 
 
 class Organization(Base):
@@ -48,3 +48,18 @@ class GeoWell(Base):
         onupdate=func.now(), 
         default=func.now()
     )
+    
+
+class ParameterName(Base):
+    __tablename__ = "parameter_name"
+    pydantic_model = NameField
+    name: Mapped[str] = mapped_column(String(length=150), nullable=False)
+    
+
+class Parameter(Base):
+    __tablename__ = "parameter"
+    pydantic_model = Parameter
+    well: Mapped[int] = mapped_column(ForeignKey('geo_well.id'), nullable=False)
+    parameter_name: Mapped[int] = mapped_column(ForeignKey('parameter_name.id'), nullable=False)
+    date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    value: Mapped[float] = mapped_column(nullable=True)
