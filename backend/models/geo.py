@@ -35,7 +35,7 @@ class GeoWell(Base):
     station: Mapped[int] = mapped_column(ForeignKey('geo_station.id'), nullable=True)
     location: Mapped[int] = mapped_column(ForeignKey('location.id'), nullable=True)
     well_type: Mapped[int] = mapped_column(ForeignKey('geo_welltype.id'), nullable=True)
-    coordinate: Mapped[int] = mapped_column(ForeignKey('coordinate.id'), nullable=True)
+    coordinate: Mapped[int] = mapped_column(ForeignKey('coordinate.id', ondelete='CASCADE'), nullable=True)
     address: Mapped[str] = mapped_column(String(length=250), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), 
