@@ -9,7 +9,7 @@ from schemas.common import NameFieldAdd
 
 router = APIRouter(
     prefix="",
-    tags=["Regions", "Districts", "Parameter names"],
+    tags=["Regions, Districts, Parameter names"],
 )
 
 
