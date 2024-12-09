@@ -65,122 +65,67 @@
         </div>
       </div>
       <div class="row row-cards">
+        <div class="col-12 col-lg-6">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex">
+                <h3 class="card-title">Social referrals</h3>
+                <div class="ms-auto">
+                  <div class="dropdown">
+                    <a class="dropdown-toggle text-secondary" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Last 7 days</a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                      <a class="dropdown-item active" href="#">Last 7 days</a>
+                      <a class="dropdown-item" href="#">Last 30 days</a>
+                      <a class="dropdown-item" href="#">Last 3 months</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <apexchart height="350" type="line" 
+                :options="gwlChartOptions" 
+                :series="gwlChartSeries"
+              ></apexchart>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex">
+                <h3 class="card-title">Social referrals</h3>
+                <div class="ms-auto">
+                  <div class="dropdown">
+                    <a class="dropdown-toggle text-secondary" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Last 7 days</a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                      <a class="dropdown-item active" href="#">Last 7 days</a>
+                      <a class="dropdown-item" href="#">Last 30 days</a>
+                      <a class="dropdown-item" href="#">Last 3 months</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <apexchart height="350" type="line" 
+                :options="gwlChartOptions" 
+                :series="gwlChartSeries"
+              ></apexchart>
+            </div>
+          </div>
+        </div>
         <div class="col">
           <div class="card">
             <div class="table-responsive">
               <table class="table table-vcenter card-table table-bordered">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Title</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th class="w-1"></th>
+                    <th>Sana</th>
+                    <th v-for="pn in parameter_names" :key="pn.id">{{ pn.name }}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td >Paweł Kuna</td>
-                    <td class="text-secondary" >
-                      UI Designer, Training
-                    </td>
-                    <td class="text-secondary" ><a href="#" class="text-reset">paweluna@howstuffworks.com</a></td>
-                    <td class="text-secondary" >
-                      User
-                    </td>
-                    <td>
-                      <a href="#">Edit</a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td >Jeffie Lewzey</td>
-                    <td class="text-secondary" >
-                      Chemical Engineer, Support
-                    </td>
-                    <td class="text-secondary" ><a href="#" class="text-reset">jlewzey1@seesaa.net</a></td>
-                    <td class="text-secondary" >
-                      Admin
-                    </td>
-                    <td>
-                      <a href="#">Edit</a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td >Mallory Hulme</td>
-                    <td class="text-secondary" >
-                      Geologist IV, Support
-                    </td>
-                    <td class="text-secondary" ><a href="#" class="text-reset">mhulme2@domainmarket.com</a></td>
-                    <td class="text-secondary" >
-                      User
-                    </td>
-                    <td>
-                      <a href="#">Edit</a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td >Dunn Slane</td>
-                    <td class="text-secondary" >
-                      Research Nurse, Sales
-                    </td>
-                    <td class="text-secondary" ><a href="#" class="text-reset">dslane3@epa.gov</a></td>
-                    <td class="text-secondary" >
-                      Owner
-                    </td>
-                    <td>
-                      <a href="#">Edit</a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td >Emmy Levet</td>
-                    <td class="text-secondary" >
-                      VP Product Management, Accounting
-                    </td>
-                    <td class="text-secondary" ><a href="#" class="text-reset">elevet4@senate.gov</a></td>
-                    <td class="text-secondary" >
-                      Admin
-                    </td>
-                    <td>
-                      <a href="#">Edit</a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td >Maryjo Lebarree</td>
-                    <td class="text-secondary" >
-                      Civil Engineer, Product Management
-                    </td>
-                    <td class="text-secondary" ><a href="#" class="text-reset">mlebarree5@unc.edu</a></td>
-                    <td class="text-secondary" >
-                      User
-                    </td>
-                    <td>
-                      <a href="#">Edit</a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td >Egan Poetz</td>
-                    <td class="text-secondary" >
-                      Research Nurse, Engineering
-                    </td>
-                    <td class="text-secondary" ><a href="#" class="text-reset">epoetz6@free.fr</a></td>
-                    <td class="text-secondary" >
-                      Admin
-                    </td>
-                    <td>
-                      <a href="#">Edit</a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td >Kellie Skingley</td>
-                    <td class="text-secondary" >
-                      Teacher, Services
-                    </td> 
-                    <td class="text-secondary" ><a href="#" class="text-reset">kskingley7@columbia.edu</a></td>
-                    <td class="text-secondary" >
-                      Owner
-                    </td>
-                    <td>
-                      <a href="#">Edit</a>
+                  <tr v-for="(params, date) in dataByDate" :key="date">
+                    <td>{{ date }}</td>
+                    <td v-for="pn in parameter_names" :key="pn.id">
+                      {{ params[pn.id] !== undefined ? params[pn.id] : '' }}
                     </td>
                   </tr>
                 </tbody>
@@ -188,6 +133,7 @@
             </div>
           </div>
         </div>
+        
       </div>
     </div>
     
@@ -207,11 +153,28 @@
 </template>
 
 <script>
-import { getWell } from '@/api/geo';
+import { getWell, getParameterNames, getParameter } from '@/api/geo';
 import { ref } from 'vue';
 import { format } from 'date-fns';
 import { IconPencil } from '@tabler/icons-vue'
 
+// let table = new DataTable('#datatable', {
+//     perPageSelect: [5, 10, 15, ["All", -1]],
+//     language: {
+//       "decimal":        "",
+//       "emptyTable":     "Mavjud emas",
+//       "info":           "_TOTAL_ ta yozuvdan _START_ dan _END_ gacha koʻrsatilmoqda",
+//       "infoFiltered":   "(filtered from _MAX_ total entries)",
+//       "infoPostFix":    "",
+//       "thousands":      ",",
+//       "lengthMenu":     "_MENU_ mehmon har bir sahifada",
+//       "loadingRecords": "Yuklanmoqda...",
+//       "processing":     "",
+//       "search":         "Qidiruv:",
+//       "zeroRecords":    "Mehmon topilmadi",
+
+//     }
+//   });
 
 export default {
   data: () => ({
@@ -221,6 +184,21 @@ export default {
     modalType: '',
     noInfoMes: '-',
     modalOnCloseFunc: () => { },
+    parameter_names: [],
+    parameters: [],
+    gwlChartOptions: {
+      chart: {
+        type: 'line'
+      },
+      xaxis: {
+        categories: ['1991-01-01', 1992, 1993, 1994, 1995, 1996, 1997, 1998],
+        type: 'datetime',
+      }
+    },
+    gwlChartSeries: [{
+      name: 'series-1',
+      data: [30, 40, 45, 50, 49, 60, 70, 91]
+    }]
   }),
 
   components: {
@@ -233,7 +211,6 @@ export default {
       modalAlert
     }
   },
-
   computed: {
     format() {
       return format;
@@ -245,21 +222,47 @@ export default {
     latitude() {
       const { latitude_degree, latitude_minute, latitude_second } = this.well?.coordinate ?? {};
       return `${latitude_degree ?? ''}°${latitude_minute ?? ''}"${latitude_second ?? ''}'`;
+    },
+    dataByDate() {
+      const grouped = {};
+      for (const param of this.parameters) {
+        const date = param.date.split("T")[0]; 
+        if (!grouped[date]) {
+          grouped[date] = {};
+        }
+        grouped[date][param.parameter_name] = param.value;
+      }
+      return grouped;
+    }
+  },
+
+  methods:{
+    setGwlOptionsSeries(parameters){
+      const grouped = {};
+      for (const param of parameters) {
+        const date = param.date.split("T")[0]; 
+        if (!grouped[date]) {
+          grouped[date] = {};
+        }
+        grouped[date][param.parameter_name] = param.value;
+      }
+      return grouped;
     }
   },
 
   async mounted() {
-    const wellId = this.$route?.params?.id; // Access $route in the mounted hook
+    const wellId = this.$route?.params?.id;
     if (wellId) {
       try {
         this.well = await getWell(wellId);
-        console.log(this.well);
-        
+        this.parameter_names = await getParameterNames();
+        this.parameters = await getParameter(wellId);
+        this.setGwlOptionsSeries(this.parameters);
       } catch (error) {
         console.error('Error fetching well data:', error);
         this.modalAlert.openModal();
         this.modalTitle = "Ma'lumotlarni yuklashda xatolik yuzaga keldi";
-        this.modalDesc = `Xato xabari: ${error.message}`;
+        this.modalDesc = `Xato xabari: ${error?.message}`;
         this.modalType = 'danger';
       }
     } else {
