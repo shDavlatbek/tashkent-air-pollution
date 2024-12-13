@@ -3,7 +3,7 @@
     <div class="container-xl">
       <div class="card mb-4">
         <div class="card-header">
-          <h3 class="card-title">Quduq ma'lumotlari</h3>
+          <h3 class="card-title">Stansiya ma'lumotlari</h3>
           <div class="card-actions">
             <a href="#" data-bs-toggle="modal" data-bs-target="">
               Tahrirlash
@@ -14,7 +14,7 @@
         <div class="card-body">
           <div class="datagrid">
             <div class="datagrid-item">
-              <div class="datagrid-title">Quduq raqami</div>
+              <div class="datagrid-title">Stansiya raqami</div>
               <div class="datagrid-content">{{ well?.number ? well?.number : noInfoMes }}</div>
             </div>
             <div class="datagrid-item">
@@ -34,7 +34,7 @@
               <div class="datagrid-content">{{ well?.location ? well?.location?.name : noInfoMes }}</div>
             </div>
             <div class="datagrid-item">
-              <div class="datagrid-title">Quduq turi</div>
+              <div class="datagrid-title">Stansiya turi</div>
               <div class="datagrid-content">{{ well?.well_type ? well?.well_type?.name : noInfoMes }}</div>
             </div>
             <div class="datagrid-item">
@@ -113,6 +113,23 @@
         </div>
         <div class="col">
           <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Parameterlar</h3>
+              <div class="ms-auto">
+                <button class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal"
+                  :data-bs-target="'#'+modalId"
+                  @click="onModalOpen">
+                  <IconPlus class="icon" stroke="2" />
+                  Qo'shish
+                </button>
+                <button class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" 
+                  :data-bs-target="'#'+modalId"
+                  aria-label="Qo'shish"
+                  @click="onModalOpen">
+                  <IconPlus class="icon" stroke="2" />
+                </button>
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="table table-vcenter card-table table-bordered">
                 <thead>
@@ -156,7 +173,7 @@
 import { getWell, getParameterNames, getParameter } from '@/api/geo';
 import { ref } from 'vue';
 import { format } from 'date-fns';
-import { IconPencil } from '@tabler/icons-vue'
+import { IconPencil, IconPlus } from '@tabler/icons-vue'
 
 // let table = new DataTable('#datatable', {
 //     perPageSelect: [5, 10, 15, ["All", -1]],
@@ -202,7 +219,7 @@ export default {
   }),
 
   components: {
-    IconPencil
+    IconPencil, IconPlus
   },
 
   setup() {

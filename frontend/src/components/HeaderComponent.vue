@@ -122,17 +122,13 @@ export default {
           link: '/'
         },
         {
-          name: 'Gigrogeologik',
+          name: 'Meteorologiya',
           link: '/geo'
         },
         {
-          name: 'Gidromeliorativ',
-          link: '/melio'
-        },
-        {
-          name: 'Gidrometeorologik',
+          name: 'Ekologik Maʻlumotlar',
           link: '/meteo'
-        }
+        },
       ]
     }
   },

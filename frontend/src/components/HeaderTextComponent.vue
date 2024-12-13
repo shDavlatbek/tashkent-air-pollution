@@ -15,12 +15,7 @@
               <IconPlus class="icon" stroke="2" />
               Qo'shish
             </button>
-            <button class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" 
-              :data-bs-target="'#'+modalId"
-              aria-label="Qo'shish"
-              @click="onModalOpen">
-              <IconPlus class="icon" stroke="2" />
-            </button>
+            
           </div>
         </div>
       </div>

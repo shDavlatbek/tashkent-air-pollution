@@ -4,16 +4,19 @@
   <div class="page-body">
     <div class="container-xl">
       <div class="card">
-        <div class="card-body">
-          <div class="row g-3 mb-3 align-items-center">
-            <div class="col-auto ms-auto">
-              <label for="geo-search" class="col-form-label">Qidiruv</label>
-            </div>
-            <div class="col-auto">
-              <input type="text" v-model="searchQuery" @input="updateSearch" id="geo-search" class="form-control form-control-sm">
+        <div class="card-body border-bottom py-3">
+          <div class="d-flex">
+            <div class="ms-auto row">
+              <div class="col-auto">
+                <label for="geo-search" class="col-form-label p-0">Qidiruv</label>
+              </div>
+              <div class="col-auto">
+                <input type="text" v-model="searchQuery" @input="updateSearch" id="geo-search" class="form-control form-control-sm">
+              </div>
             </div>
           </div>
-          <div id="table-geo" class="table-responsive">
+        </div>
+        <div id="table-geo" class="table-responsive">
             <table class="table">
               <thead>
                 <tr>
@@ -47,7 +50,6 @@
               </tbody>
             </table>
           </div>
-        </div>
       </div>
     </div>
   </div>
@@ -63,11 +65,11 @@
               </SelectField>
             </div>
             <div class="col-lg-6 col-md-12">
-              <InputField label="Kuzatuv qudug'i raqami" :required="true" v-model.number="addWellForm.number"
+              <InputField label="Stansiya raqami" :required="true" v-model.number="addWellForm.number"
                 type="number" />
             </div>
             <div class="col-lg-6 col-md-12">
-              <SelectField label="Kuzatuv burg'u qudug'ining turi" v-model="addWellForm.well_type">
+              <SelectField label="Stansiyaning nomi" v-model="addWellForm.well_type">
                 <option v-for="one in wellTypes" :key="one.id" :value="one.id">{{ one.name }}</option>
               </SelectField>
             </div>
@@ -111,7 +113,7 @@
             <div class="col-lg-6">
               <div class="mb-3">
                 <label class="form-label">*</label>
-                <div class="form-control-plaintext">Kuzatuv burg'u qudug'ining koordinatasi</div>
+                <div class="form-control-plaintext">Stansiya koordinatasi</div>
               </div>
               <label class="form-label">Shimoliy kenglik</label>
               <div class="row">
@@ -212,7 +214,7 @@ import { ref } from 'vue';
 export default {
   data() {
     return {
-      title: "Gidrogeologik ma'lumotlar",
+      title: "Meteorologik ma'lumotlar",
       modalId: "hydrogeologic-modal",
       addWellForm: {
         number: null,
