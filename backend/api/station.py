@@ -4,7 +4,7 @@ from api.auth import fastapi_users
 
 from api.dependencies import UOWDep
 from services.station import StationService, ParameterService
-from schemas.station import ParameterSchema, ParameterQuery, ParameterAdd, ParameterUpdate
+from schemas.station import ParameterSchema, ParameterQuery, ParameterAdd, ParameterUpdate, StationQuery
 from typing import Annotated, Optional
 
 
@@ -37,7 +37,7 @@ async def  add_parameter(
     parameter: ParameterAdd,
     user=Depends(fastapi_users.current_user(active=True))
 ):
-    return {"parameter_id": await ParameterService().add_parameter(uow, parameter)}
+    return {"parameter": await ParameterService().add_parameter(uow, parameter)}
 
 
 @router.post("/parameter/edit")
@@ -52,9 +52,10 @@ async def  edit_parameter(
 
 
 @router.get("/{id}")
-async def get_well(
+async def get_station(
     uow: UOWDep,
     id: int,
+    filters: Annotated[StationQuery, Query()],
     user=Depends(fastapi_users.current_user(active=True))
 ):
-    return await StationService().get_station(uow, id)
+    return await StationService().get_station(uow, id, filters)

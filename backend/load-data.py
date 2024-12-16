@@ -22,6 +22,24 @@ cursor = db.cursor()
 
 # Load station data
 stations = json.load(open("data/stations.json"))
+parameters = json.load(open("data/parameters.json"))
+
+for parameter in parameters:
+    cursor.execute(
+        '''
+        INSERT OR IGNORE INTO parameter (station, datetime, aqi, hum, prec, pm25)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ''',
+        (
+            parameter["station"],
+            f"{parameter['date']} {parameter['time']}",
+            parameter["aqi"],
+            parameter["hum"],
+            parameter["prec"],
+            parameter["pm2.5"]
+        ),
+    )
+
 
 # Insert stations into the database
 for station in stations:

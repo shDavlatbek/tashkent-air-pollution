@@ -1,5 +1,5 @@
-from typing import Optional
-from pydantic import BaseModel
+from typing import List, Optional
+from pydantic import BaseModel, Field
 from datetime import datetime
     
     
@@ -11,18 +11,27 @@ class StationSchema(BaseModel):
     lat: float
     created_at: datetime
     updated_at: datetime
+    parameters: Optional[List['ParameterSchema']] = None  # Add this field
 
     class Config:
         from_attributes = True
         
         
+class StationQuery(BaseModel):             
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+       
+        
 class ParameterAdd(BaseModel):
     station: int
-    datetime: Optional[datetime] = None
-    aqi: Optional[int] = None
-    hum: Optional[int] = None
-    prec: Optional[int] = None
-    pm25: Optional[int] = None
+    date_time: Optional[datetime] = Field(None, alias="datetime")
+    aqi: Optional[float] = None
+    hum: Optional[float] = None
+    prec: Optional[float] = None
+    pm25: Optional[float] = None
 
     class Config:
         from_attributes = True        
@@ -38,8 +47,7 @@ class ParameterUpdate(ParameterAdd):
 
 class ParameterQuery(BaseModel):
     id: Optional[int] = None
-    station: Optional[str] = None
-    parameter: Optional[str] = None               
+    station: Optional[str] = None            
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
 

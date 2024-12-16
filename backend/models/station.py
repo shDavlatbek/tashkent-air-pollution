@@ -24,7 +24,6 @@ class Station(Base):
         onupdate=func.now(), 
         default=func.now()
     )
-    parameters: Mapped[list["Parameter"]] = relationship("Parameter", back_populates="station_obj")
     
 
 class Parameter(Base):
@@ -36,4 +35,3 @@ class Parameter(Base):
     hum: Mapped[float] = mapped_column(nullable=True)
     prec: Mapped[float] = mapped_column(nullable=True)
     pm25: Mapped[float] = mapped_column(nullable=True)
-    station_obj: Mapped["Station"] = relationship("Station", back_populates="parameters")

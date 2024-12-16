@@ -1,3 +1,4 @@
+from typing import List
 from schemas.station import ParameterSchema, ParameterUpdate
 from utils.unitofwork import IUnitOfWork
 
@@ -5,12 +6,18 @@ from utils.unitofwork import IUnitOfWork
 class StationService:
     async def get_stations(self, uow: IUnitOfWork):
         async with uow:
-            return await uow.geo_well.find_all()
+            return await uow.station.find_all()
         
-    async def get_station(self, uow: IUnitOfWork, station_id: int):
+    async def get_station(self, uow: IUnitOfWork, station_id: int, filters):
         async with uow:
             station = await uow.station.find_one(id=station_id)
             if station:
+                if filters:
+                    station.parameters = await uow.parameter.find_all_with_dates(
+                        station=station_id,
+                        start_date=filters.start_date,
+                        end_date=filters.end_date
+                    )
                 return station
             else:
                 return None
@@ -22,9 +29,9 @@ class ParameterService:
         async with uow:
             parameter_id = await uow.parameter.add_one(parameter_dict)
             await uow.commit()
-            return parameter_id
+            return await uow.parameter.find_one(id=parameter_id)
         
-    async def get_parameters(self, uow: IUnitOfWork, filters):
+    async def get_parameters(self, uow: IUnitOfWork, filters) -> List[ParameterSchema]:
         async with uow:
             start_date = filters.start_date
             end_date = filters.end_date
