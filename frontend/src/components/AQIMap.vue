@@ -15,23 +15,27 @@ const props = defineProps({
 });
 
 const getAqiColor = (aqi) => {
+
+  
   if (aqi <= 50) return '#00e400';
   if (aqi <= 100) return '#f7D543';
   if (aqi <= 150) return '#ff7e00';
   if (aqi <= 200) return '#E95F5E';
-  return '#9168A1';
+  if (aqi <= 300) return '#9168A1';
+  
+  return '#9D6878';
 };
 
 const updateMarkers = () => {
   if (map) {
     // Clear existing layers
     map.eachLayer((layer) => {
-      if (layer instanceof L.Marker) {
+      if (layer instanceof L.Marker || layer instanceof L.Circle) {
         map.removeLayer(layer);
       }
     });
 
-    // Add station markers
+    // Add station markers and circles
     props.stations.forEach(station => {
       const markerHtml = `
         <div class="station-marker" style="background-color: ${getAqiColor(station.aqi)}">
@@ -44,6 +48,14 @@ const updateMarkers = () => {
         className: 'custom-div-icon',
         iconSize: [30, 30],
       });
+
+      // Add circle with opacity
+      L.circle([station.lat, station.lng], {
+        color: getAqiColor(station.aqi),
+        fillColor: getAqiColor(station.aqi),
+        fillOpacity: 0.2,
+        radius: 1200
+      }).addTo(map);
 
       L.marker([station.lat, station.lng], { icon })
         .bindPopup(`

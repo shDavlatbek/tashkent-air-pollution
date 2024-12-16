@@ -170,7 +170,7 @@
 </template>
 
 <script>
-import { getWell, getParameterNames, getParameter } from '@/api/geo';
+import { getWell, getParameterNames, getParameter } from '@/api/station';
 import { ref } from 'vue';
 import { format } from 'date-fns';
 import { IconPencil, IconPlus } from '@tabler/icons-vue'
