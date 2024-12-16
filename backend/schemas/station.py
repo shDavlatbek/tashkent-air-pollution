@@ -5,7 +5,7 @@ from datetime import datetime
     
 class StationSchema(BaseModel):
     id: int
-    number: int
+    number: str
     name: str
     lon: float
     lat: float
@@ -26,7 +26,7 @@ class StationQuery(BaseModel):
        
         
 class ParameterAdd(BaseModel):
-    station: int
+    station: str
     date_time: Optional[datetime] = Field(None, alias="datetime")
     aqi: Optional[float] = None
     hum: Optional[float] = None
@@ -42,7 +42,7 @@ class ParameterSchema(ParameterAdd):
 
 
 class ParameterUpdate(ParameterAdd):
-    station: Optional[int] = None 
+    station: Optional[str] = None 
 
 
 class ParameterQuery(BaseModel):
