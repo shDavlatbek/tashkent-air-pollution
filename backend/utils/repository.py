@@ -45,3 +45,19 @@ class SQLAlchemyRepository(AbstractRepository):
         except NoResultFound:
             res = None
         return res
+
+
+class SQLAlchemyRepositoryModified(SQLAlchemyRepository):
+    async def find_all_with_dates(self, start_date=None, end_date=None, **filter_by):
+        stmt = select(self.model)
+        
+        if start_date:
+            stmt = stmt.where(self.model.datetime >= start_date)
+        if end_date:
+            stmt = stmt.where(self.model.datetime <= end_date)
+        
+        if filter_by:
+            stmt = stmt.filter_by(**filter_by)
+        
+        res = await self.session.execute(stmt)
+        return [row[0].to_read_model() for row in res.all()]

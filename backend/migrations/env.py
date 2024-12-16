@@ -23,8 +23,7 @@ if config.config_file_name is not None:
 
 from db.db import Base
 from models.users import User
-from models.common import Region, District, Location, Coordinate
-from models.geo import GeoWell, Station, WellType, Organization, Parameter, ParameterName
+from models.station import Station, Parameter
 
 target_metadata = Base.metadata
 print(target_metadata.tables)  # Add this in `env.py`

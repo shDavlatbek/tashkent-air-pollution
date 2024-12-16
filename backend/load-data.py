@@ -1,51 +1,46 @@
+from datetime import datetime
 import sqlite3
 import json
 
-db = sqlite3.connect('sqlite.db')
+# Define the adapter for datetime to string
+def adapt_datetime(dt):
+    return dt.strftime("%Y-%m-%d %H:%M:%S")
+
+# Define the converter from string to datetime
+def convert_datetime(s):
+    return datetime.strptime(s.decode(), "%Y-%m-%d %H:%M:%S")
+
+# Register the adapter and converter
+sqlite3.register_adapter(datetime, adapt_datetime)
+sqlite3.register_converter("DATETIME", convert_datetime)
+
+# Connect to the database with custom datetime handling
+db = sqlite3.connect(
+    "sqlite.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES
+)
 cursor = db.cursor()
 
-regions = json.load(open('data/regions.json'))
-districts = json.load(open('data/districts.json'))
-locations = json.load(open('data/locations.json'))
-geo_organizations = json.load(open('data/geo_organizations.json'))
-geo_stations = json.load(open('data/geo_stations.json'))
-geo_well_types = json.load(open('data/geo_well_types.json'))
+# Load station data
+stations = json.load(open("data/stations.json"))
 
-for region in regions:
+# Insert stations into the database
+for station in stations:
     cursor.execute(
-        'INSERT OR IGNORE INTO region (id, name) VALUES (?, ?)',
-        (region['id'], region['name_uz'])
-    )
-  
-for district in districts:
-    cursor.execute(
-        'INSERT OR IGNORE INTO district (id, name, region_id) VALUES (?, ?, ?)',
-        (district['id'], district['name_uz'], district['region_id'])
-    )
-
-for location in locations:
-    cursor.execute(
-        'INSERT OR IGNORE INTO location (id, name) VALUES (?, ?)',
-        (location['id'], location['name'])
-    )
-    
-for geo_organization in geo_organizations:
-    cursor.execute(
-        'INSERT OR IGNORE INTO geo_organization (id, name) VALUES (?, ?)',
-        (geo_organization['id'], geo_organization['name'])
-    )
-    
-for geo_station in geo_stations:
-    cursor.execute(
-        'INSERT OR IGNORE INTO geo_station (id, name) VALUES (?, ?)',
-        (geo_station['id'], geo_station['name'])
+        '''
+        INSERT OR IGNORE INTO station (id, number, name, lon, lat, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''',
+        (
+            station["id"],
+            station["value_id"],
+            station["name"],
+            station["lon"],
+            station["lat"],
+            datetime.now(),
+            datetime.now(),
+        ),
     )
 
-for geo_well_type in geo_well_types:
-    cursor.execute(
-        'INSERT OR IGNORE INTO geo_welltype (id, name) VALUES (?, ?)',
-        (geo_well_type['id'], geo_well_type['name'])
-    )
-
+# Commit changes and close the connection
 db.commit()
 db.close()

@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "value_id": "036112022",
+    "name": "Xalqlar do'stligi maydoni",
+    "lon": 69.2407,
+    "lat": 41.3109
+  },
+  {
+    "id": 2,
+    "value_id": "037112022",
+    "name": "Yangi O'zbekiston Bog'i",
+    "lon": 69.437639542329,
+    "lat": 41.329074094709
+  },
+  {
+    "id": 3,
+    "value_id": "038112022",
+    "name": "Yangihayot tumani 333-maktab",
+    "lon": 69.2277,
+    "lat": 41.1818
+  },
+  {
+    "id": 4,
+    "value_id": "039112022",
+    "name": "Tuzel-1 557-bog'cha",
+    "lon": 69.3604,
+    "lat": 41.2987
+  },
+  {
+    "id": 5,
+    "value_id": "040112022",
+    "name": "Bektemir tumani 578-bog'cha",
+    "lon": 69.3738,
+    "lat": 41.2523
+  },
+  {
+    "id": 6,
+    "value_id": "041112022",
+    "name": "Lokomotiv bog'i",
+    "lon": 69.3439,
+    "lat": 41.3551
+  },
+  {
+    "id": 7,
+    "value_id": "042112022",
+    "name": "G'afur G'ulom bog'i",
+    "lon": 69.2133,
+    "lat": 41.282
+  },
+  {
+    "id": 8,
+    "value_id": "043112022",
+    "name": "Olmazor tumani, Dermatologiya",
+    "lon": 69.169394091616,
+    "lat": 41.350509321198
+  },
+  {
+    "id": 9,
+    "value_id": "044112022",
+    "name": "Olmazor tumani 423-bog'cha",
+    "lon": 69.2363,
+    "lat": 41.3534
+  },
+  {
+    "id": 10,
+    "value_id": "045112022",
+    "name": "Yangihayot tumani 329-maktab",
+    "lon": 69.203,
+    "lat": 41.222
+  }
+]

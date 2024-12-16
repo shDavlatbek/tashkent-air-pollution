@@ -3,44 +3,23 @@ from fastapi import APIRouter, Depends, Query
 from api.auth import fastapi_users
 
 from api.dependencies import UOWDep
-from services.geo import GeoService, ParameterService
-from schemas.geo import AddGeoWell, Parameter, ParameterQuery, ParameterAdd
+from services.station import StationService, ParameterService
+from schemas.station import ParameterSchema, ParameterQuery, ParameterAdd, ParameterUpdate
 from typing import Annotated, Optional
 
 
 router = APIRouter(
-    prefix="/geo",
+    prefix="/station",
     tags=["Geo"],
 )
 
 
-@router.get("/add")
-async def add_well_form(
-    uow: UOWDep,
-    user=Depends(fastapi_users.current_user(active=True))
-):
-    return await GeoService().add_well_form(uow)
-
-
-@router.post("/add")
-async def add_well(
-    uow: UOWDep,
-    well: AddGeoWell,
-    user=Depends(fastapi_users.current_user(active=True))
-):
-    return await GeoService().add_well(uow, well)
-
-
 @router.get("/")
-async def get_wells(
+async def get_stations(
     uow: UOWDep,
     user=Depends(fastapi_users.current_user(active=True))
 ):
-    res = []
-    wells = await GeoService().get_wells(uow)
-    for well in wells:
-        res.append(await GeoService().get_well(uow, well.id))
-    return res
+    return await StationService().get_stations(uow)
 
 
 @router.get("/parameter")
@@ -49,8 +28,6 @@ async def  get_parameters(
     filters: Annotated[ParameterQuery, Query()],
     user=Depends(fastapi_users.current_user(active=True))
 ):
-    filters = filters.model_dump(exclude_none=True)
-    print(filters)
     return await ParameterService().get_parameters(uow, filters)
 
 
@@ -67,7 +44,7 @@ async def  add_parameter(
 async def  edit_parameter(
     uow: UOWDep,
     parameter_id: int,
-    parameter: ParameterAdd,
+    parameter: ParameterUpdate,
     user=Depends(fastapi_users.current_user(active=True))
 ):  
     await ParameterService().edit_parameter(uow, parameter_id, parameter)
@@ -80,4 +57,4 @@ async def get_well(
     id: int,
     user=Depends(fastapi_users.current_user(active=True))
 ):
-    return await GeoService().get_well(uow, id)
+    return await StationService().get_station(uow, id)
