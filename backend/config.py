@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     database_url_notasync: str
     jwt_secret: str
     jwt_lifetime: int
+    redis_url: str
 
     class Config:
         env_file = ".env"
