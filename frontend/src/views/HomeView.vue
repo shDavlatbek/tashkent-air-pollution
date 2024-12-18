@@ -29,27 +29,17 @@
 
 <script>
 import AQIMap from "@/components/AQIMap.vue";
-import axios from "axios";
+import { getStationsParams } from "@/api/station";
 
 export default {
   data() {
     return {
       dashboard: null,
-      api: axios.create({ baseURL: 'https://opendata-back.tashkent.uz/oz/api/data/all/133/?format=json' }),
-      stations: [
-        { id: 1, name: "Station 1", lat: 41.2995, lng: 69.2401, aqi: 50 },
-        { id: 2, name: "Station 2", lat: 41.3089, lng: 69.2800, aqi: 132 },
-        { id: 3, name: "Station 3", lat: 41.2899, lng: 69.2654, aqi: 142 },
-      ]
+      stations: []
     };
   },
   
   methods: {
-    async getDashboard() {
-      return await this.api.get().then((res) => {
-        return res.data.iframe_link_oz;
-      });
-    },
     loadFrame(event){
       const iframe = event.target;
       try {
@@ -58,11 +48,38 @@ export default {
       } catch (error) {
         console.error("Unable to adjust iframe height:", error);
       }
+    },
+    utcRoundedTime() {
+      const now = new Date();
+      return new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(), // Keep hours
+        0,                 // Set minutes to 0
+        0,                 // Set seconds to 0
+        0                  // Set milliseconds to 0
+      ));
+    },
+    utcTime10daysAgo() {
+      const now = new Date();
+      return new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() - 10,
+        now.getUTCHours(), // Keep hours
+        0,                 // Set minutes to 0
+        0,                 // Set seconds to 0
+        0                  // Set milliseconds to 0
+      ));
     }
   },
 
   async mounted() {
-    this.dashboard = await this.getDashboard();
+    this.stations = await getStationsParams(
+      this.utcTime10daysAgo(),
+      this.utcRoundedTime(),
+    );
   },
 
   components: { AQIMap }

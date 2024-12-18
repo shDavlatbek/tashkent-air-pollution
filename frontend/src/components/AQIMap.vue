@@ -36,13 +36,27 @@ const updateMarkers = () => {
     });
 
     // Add station markers and circles
+    stations = toRaw(stations)
     props.stations.forEach(station => {
-      const markerHtml = `
-        <div class="station-marker" style="background-color: ${getAqiColor(station.aqi)}">
-          <span>${station.aqi}</span>
-        </div>
-      `;
+      // getAqiColor(station?.parameter[0]?.aqi)
+      // station?.parameter[0]?.aqi
+      console.log(station);
+      
+      if (typeof station?.parameter[0]!=undefined){
+        const markerHtml = `
+          <div class="station-marker" style="background-color: ${getAqiColor(station?.parameter[0]?.aqi)}">
+            <span>${station?.parameter[0]?.aqi}</span>
+          </div>
+        `;
 
+      }else{
+        const markerHtml = `
+          <div class="station-marker" style="background-color: ${"black"}">
+            <span>Sensor mavjud emas</span>
+          </div>
+        `;
+      }
+      
       const icon = L.divIcon({
         html: markerHtml,
         className: 'custom-div-icon',
@@ -50,14 +64,14 @@ const updateMarkers = () => {
       });
 
       // Add circle with opacity
-      L.circle([station.lat, station.lng], {
+      L.circle([station.lat, station.lon], {
         color: getAqiColor(station.aqi),
         fillColor: getAqiColor(station.aqi),
         fillOpacity: 0.2,
-        radius: 1200
+        radius: 2000
       }).addTo(map);
 
-      L.marker([station.lat, station.lng], { icon })
+      L.marker([station.lat, station.lon], { icon })
         .bindPopup(`
           <strong>${station.name}</strong><br>
           AQI: ${station.aqi}

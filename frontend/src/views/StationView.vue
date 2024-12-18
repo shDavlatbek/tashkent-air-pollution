@@ -8,15 +8,15 @@
           <div class="d-flex">
             <div class="ms-auto row">
               <div class="col-auto">
-                <label for="geo-search" class="col-form-label p-0">Qidiruv</label>
+                <label for="station-search" class="col-form-label p-0">Qidiruv</label>
               </div>
               <div class="col-auto">
-                <input type="text" v-model="searchQuery" @input="updateSearch" id="geo-search" class="form-control form-control-sm">
+                <input type="text" v-model="searchQuery" @input="updateSearch" id="station-search" class="form-control form-control-sm">
               </div>
             </div>
           </div>
         </div>
-        <div id="table-geo" class="table-responsive" >
+        <div id="table-station" class="table-responsive" >
             <table class="table table-bordered">
               <thead>
                 <tr>
@@ -27,7 +27,7 @@
                 </tr>
               </thead>
               <tbody class="table-tbody">
-                <tr class="table-row" v-for="(station, index) in stations" :key="index" @click="navigateToGeoSingle(station.id)">
+                <tr class="table-row" v-for="(station, index) in stations" :key="index" @click="navigateToStationSingle(station.id)">
                   <td class="sort-name">{{ station?.name }}</td>
                   <td class="sort-number">{{ station?.number }}</td>
                   <td class="sort-lat">{{ station?.lat }}</td>
@@ -143,10 +143,10 @@ export default {
       }
     },
     initializeList() {
-      const tableGeo = document.getElementById('table-geo');
-      if (tableGeo) {
+      const tableStation = document.getElementById('table-station');
+      if (tableStation) {
         if (!this.list) {
-          this.list = new List('table-geo', {
+          this.list = new List('table-station', {
             sortClass: 'table-sort',
             listClass: 'table-tbody',
             valueNames: ['sort-name', 'sort-number', 'sort-lat', 'sort-lon'],
@@ -155,7 +155,7 @@ export default {
           this.list.reIndex();
         }
       } else {
-        console.error("Element #table-geo not found!");
+        console.error("Element #table-station not found!");
       }
     },
     updateSearch() {
@@ -163,8 +163,8 @@ export default {
         this.list.search(this.searchQuery);
       }
     },
-    navigateToGeoSingle(id) {
-      this.$router.push({ name: "GeoSingle", params: { id } });
+    navigateToStationSingle(id) {
+      this.$router.push({ name: "StationSingle", params: { id } });
     },
   },
   async mounted() {

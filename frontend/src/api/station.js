@@ -10,14 +10,23 @@ export const getStations = async () => {
   return (await reqApi(PREFIX)).data;
 };
 
-export const getWell = async (id) => {
-  return (await reqApi(`/geo/${id}`)).data;
+export const getStationsParams = async (start_date=null, end_date=null) => {
+  const filters = {}
+  if (start_date) filters.start_date = start_date;
+  if (end_date) filters.end_date = end_date;
+  return (await reqApi(`${PREFIX}/`,
+    filters
+  )).data;
+};
+
+export const getStation = async (id) => {
+  return (await reqApi(`/station/${id}`)).data;
 };
 
 export const getParameterNames = async () => {
   return (await reqApi(`/parameter-names`)).data;
 };
 
-export const getParameter = async (well_id) => {
-  return (await reqApi(`/geo/parameter`, {well: well_id})).data;
+export const getParameter = async (station_id) => {
+  return (await reqApi(`/station/parameter`, {station: station_id})).data;
 };

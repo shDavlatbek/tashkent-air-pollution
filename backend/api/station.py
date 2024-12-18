@@ -6,24 +6,32 @@ from api.dependencies import UOWDep
 from services.station import StationService, ParameterService
 from schemas.station import ParameterSchema, ParameterQuery, ParameterAdd, ParameterUpdate, StationQuery
 from typing import Annotated, Optional
+from fastapi_cache.decorator import cache
 
 
 router = APIRouter(
     prefix="/station",
-    tags=["Geo"],
+    tags=["Station"],
 )
 
 
+CACHE_EXPIRE = 3600
+TIMEOUT = 30
+
+
 @router.get("/")
+@cache(expire=CACHE_EXPIRE)
 async def get_stations(
     uow: UOWDep,
+    filters: Annotated[StationQuery, Query()] = None,
     user=Depends(fastapi_users.current_user(active=True))
 ):
-    return await StationService().get_stations(uow)
+    return await StationService().get_stations(uow, filters)
 
 
 @router.get("/parameter")
-async def  get_parameters(
+@cache(expire=CACHE_EXPIRE)
+async def get_parameters(
     uow: UOWDep,
     filters: Annotated[ParameterQuery, Query()],
     user=Depends(fastapi_users.current_user(active=True))
@@ -32,7 +40,7 @@ async def  get_parameters(
 
 
 @router.post("/parameter/add")
-async def  add_parameter(
+async def add_parameter(
     uow: UOWDep,
     parameter: ParameterAdd,
     user=Depends(fastapi_users.current_user(active=True))
@@ -41,7 +49,7 @@ async def  add_parameter(
 
 
 @router.post("/parameter/edit")
-async def  edit_parameter(
+async def edit_parameter(
     uow: UOWDep,
     parameter_id: int,
     parameter: ParameterUpdate,
@@ -52,10 +60,10 @@ async def  edit_parameter(
 
 
 @router.get("/{id}")
+@cache(expire=CACHE_EXPIRE) 
 async def get_station(
     uow: UOWDep,
-    id: int,
     filters: Annotated[StationQuery, Query()],
     user=Depends(fastapi_users.current_user(active=True))
 ):
-    return await StationService().get_station(uow, id, filters)
+    return await StationService().get_station(uow, filters)

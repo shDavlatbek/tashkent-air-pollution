@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 
-from sqlalchemy import insert, select, update
+from sqlalchemy import insert, select, update, desc, asc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import NoResultFound
+from sqlalchemy.sql import func
 
 
 class AbstractRepository(ABC):
@@ -27,16 +28,51 @@ class SQLAlchemyRepository(AbstractRepository):
         return res.scalar_one()
 
     async def edit_one(self, id: int, data: dict) -> int:
-        stmt = update(self.model).values(**data).filter_by(id=id).returning(self.model.id)
+        stmt = (
+            update(self.model)
+            .values(**data)
+            .filter_by(id=id)
+            .returning(self.model.id)
+        )
         res = await self.session.execute(stmt)
         return res.scalar_one()
-    
-    async def find_all(self, **filter_by):
-        stmt = select(self.model).filter_by(**filter_by) if filter_by else select(self.model)
+
+    async def find_all(
+        self,
+        filters: dict = None,
+        order_by: str = None,
+        order_desc: bool = False,
+        limit: int = None,
+        offset: int = None,
+    ):
+        """
+        Find all records with optional filters, ordering, and pagination.
+        """
+        stmt = select(self.model)
+        
+        # Apply filters if provided
+        if filters:
+            for field, value in filters.items():
+                if isinstance(value, tuple) and len(value) == 2:  # Range filter
+                    stmt = stmt.where(getattr(self.model, field).between(*value))
+                else:
+                    stmt = stmt.where(getattr(self.model, field) == value)
+        
+        # Apply ordering if provided
+        if order_by:
+            order_column = getattr(self.model, order_by, None)
+            if order_column is not None:
+                stmt = stmt.order_by(desc(order_column) if order_desc else asc(order_column))
+        
+        # Apply limit and offset for pagination
+        if limit:
+            stmt = stmt.limit(limit)
+        if offset:
+            stmt = stmt.offset(offset)
+
         res = await self.session.execute(stmt)
-        res = [row[0].to_read_model() for row in res.all()]
-        return res
-    
+        return [row[0].to_read_model() for row in res.fetchall()]
+
     async def find_one(self, **filter_by):
         stmt = select(self.model).filter_by(**filter_by)
         res = await self.session.execute(stmt)
@@ -46,18 +82,18 @@ class SQLAlchemyRepository(AbstractRepository):
             res = None
         return res
 
-
-class SQLAlchemyRepositoryModified(SQLAlchemyRepository):
-    async def find_all_with_dates(self, start_date=None, end_date=None, **filter_by):
-        stmt = select(self.model)
+    async def count(self, filters: dict = None):
+        """
+        Count the total number of records with optional filters.
+        """
+        stmt = select(func.count()).select_from(self.model)
         
-        if start_date:
-            stmt = stmt.where(self.model.datetime >= start_date)
-        if end_date:
-            stmt = stmt.where(self.model.datetime <= end_date)
-        
-        if filter_by:
-            stmt = stmt.filter_by(**filter_by)
+        if filters:
+            for field, value in filters.items():
+                if isinstance(value, tuple) and len(value) == 2:  # Range filter
+                    stmt = stmt.where(getattr(self.model, field).between(*value))
+                else:
+                    stmt = stmt.where(getattr(self.model, field) == value)
         
         res = await self.session.execute(stmt)
-        return [row[0].to_read_model() for row in res.all()]
+        return res.scalar_one()

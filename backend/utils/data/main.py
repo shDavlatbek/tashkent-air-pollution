@@ -1,6 +1,6 @@
 import json
-from data.request import download_file
-from data.clean import clean_data
+from request import download_file
+from clean import clean_data
 
 # Step 1: Download file
 url = "https://opendata-back.tashkent.uz/oz/api/data/all/133/download?file_type=json"

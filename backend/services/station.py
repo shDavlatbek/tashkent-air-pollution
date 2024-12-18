@@ -1,43 +1,60 @@
 from typing import List
-from schemas.station import ParameterSchema, ParameterUpdate
+
+from fastapi import HTTPException
+from schemas.station import ParameterAdd, ParameterSchema, ParameterUpdate
 from utils.unitofwork import IUnitOfWork
 
 
 class StationService:
-    async def get_stations(self, uow: IUnitOfWork):
+    async def get_stations(self, uow: IUnitOfWork, filters = None):
         async with uow:
-            return await uow.station.find_all()
-        
-    async def get_station(self, uow: IUnitOfWork, station_id: int, filters):
-        async with uow:
-            station = await uow.station.find_one(id=station_id)
-            if station:
-                if filters:
-                    station.parameters = await uow.parameter.find_all_with_dates(
-                        station=station_id,
-                        start_date=filters.start_date,
-                        end_date=filters.end_date
+            stations = await uow.station.find_all()
+            if filters:
+                filters = filters.model_dump()
+                for station in stations:
+                    filters["station"] = station.number
+                    station.parameters = await uow.parameter.find_all(
+                        filters=filters,
+                        order_by="datetime",
+                        order_desc=True
                     )
-                return station
-            else:
-                return None
+            return stations
+        
+    async def get_station(self, uow: IUnitOfWork, filters = None):
+        async with uow:
+            station = await uow.station.find_one(number=filters.station)
+            if not station:
+                raise HTTPException(status_code=404, detail="Station not found")
+            
+            station.parameters = await uow.parameter.find_all(
+                    filters=filters.model_dump(),
+                    order_by="datetime",
+                    order_desc=True
+                )
+            
+            return station
     
 
 class ParameterService:
-    async def add_parameter(self, uow: IUnitOfWork, parameter: ParameterSchema):
+    async def add_parameter(self, uow: IUnitOfWork, parameter: ParameterAdd):
         parameter_dict = parameter.model_dump()
         async with uow:
             parameter_id = await uow.parameter.add_one(parameter_dict)
             await uow.commit()
             return await uow.parameter.find_one(id=parameter_id)
         
-    async def get_parameters(self, uow: IUnitOfWork, filters) -> List[ParameterSchema]:
+    async def get_parameters(self, uow: IUnitOfWork, filters, limit: int = None) -> List[ParameterSchema]:
         async with uow:
-            start_date = filters.start_date
-            end_date = filters.end_date
-            filter_by = filters.model_dump(exclude={"start_date", "end_date"}, exclude_none=True)
+            filter_by = filters.model_dump(exclude_none=True)
+            if filters.start_date or filters.end_date:
+                filter_by["datetime"] = (filters.start_date, filters.end_date)
 
-            return await uow.parameter.find_all_with_dates(start_date=start_date, end_date=end_date, **filter_by)
+            return await uow.parameter.find_all(
+                filters=filter_by,
+                order_by="datetime",
+                order_desc=True,
+                limit=limit if limit else None
+            )
     
     async def edit_parameter(self, uow: IUnitOfWork, parameter_id: int, parameter: ParameterUpdate):
         parameter_dict = parameter.model_dump()

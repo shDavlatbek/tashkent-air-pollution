@@ -123,7 +123,7 @@ export default {
         },
         {
           name: 'Meteorologiya',
-          link: '/geo'
+          link: '/station'
         },
         {
           name: 'Ekologik Maʻlumotlar',

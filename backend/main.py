@@ -9,11 +9,14 @@ from fastapi_cache.backends.redis import RedisBackend
 from contextlib import asynccontextmanager
 from redis import asyncio as aioredis
 from config import settings
+from utils.filldb import fetch_and_fill_data_async
+from utils.unitofwork import get_uow
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     redis = aioredis.from_url(settings.redis_url)
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    await fetch_and_fill_data_async(await get_uow())
     yield
     
     
