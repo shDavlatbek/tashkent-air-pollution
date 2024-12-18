@@ -39,7 +39,6 @@ async def fetch_and_fill_data(uow: UOWDep):
 
 async def fetch_parameter_data(session: aiohttp.ClientSession, parameter, start_date: datetime, end_date):
     utc_plus_5 = timezone(timedelta(hours=5))
-    start_date = start_date.astimezone(utc_plus_5)
     end_date = end_date.astimezone(utc_plus_5)
     
     # Remove timezone info (make naive)
@@ -55,22 +54,23 @@ async def fetch_parameter_data(session: aiohttp.ClientSession, parameter, start_
         "end_date": end_date.isoformat(sep=' '),
         "parameter": parameter,
     }
+    print(payload, flush=True)
     auth = aiohttp.BasicAuth(login=USERNAME, password=PASSWORD)
 
     async with session.post(API_URL, json=payload, auth=auth, headers=headers) as response:
         if response.status == 200:
             return await response.json()
         else:
-            return []
+            return response
         
         
 async def fetch_and_fill_data_async(uow: UnitOfWork):
-    
+    print("PROCESSING A NEW DATA FROM API || STARTED ||", flush=True)
     async with aiohttp.ClientSession() as session:
         async with uow:
             last_record = (await ParameterService().get_parameters(uow, ParameterQuery(start_date=None, end_date=None), 1))[0]
-
-            
+            if last_record.date_time == now_utc_hours() + timedelta(hours=5):
+                return
             start_date = last_record.date_time + timedelta(hours=1)
             end_date = now_utc_hours()
             
@@ -85,6 +85,7 @@ async def fetch_and_fill_data_async(uow: UnitOfWork):
 
             for parameter, sublist in zip(PARAMETERS, responses):
                 stations = []
+                print(sublist)
                 for item in sublist['data']:
                     station_id = item["station_id"]
                     if station_id == "Average":
@@ -121,6 +122,8 @@ async def fetch_and_fill_data_async(uow: UnitOfWork):
                     prec=parameter.get("rain"),
                     pm25=parameter.get("pm2_5")
                 ))
+            print("PROCESSING A NEW DATA FROM API || FINISHED ||", flush=True)
+            return
             #     # Add records to the database
             #     for item in data:
             #         record = StationData(

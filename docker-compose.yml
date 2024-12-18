@@ -1,9 +1,23 @@
 services:
+  db:
+    image: postgres:latest
+    container_name: air_tashkent_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: airtashkent
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/data:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+    restart: always
+
   frontend:
     build:
       context: ./frontend
     ports:
-      - "8080:8080" # Expose port 80 from the container to 3000 on the host
+      - "3000:3000" # Expose port 80 from the container to 3000 on the host
     env_file:
       - ./frontend/.env
     networks:
@@ -20,7 +34,12 @@ services:
       - ./backend:/app
     networks:
       - app-network
+    depends_on:
+      - db
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  postgres_data:
