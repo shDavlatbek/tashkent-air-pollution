@@ -23,7 +23,7 @@ def schedule_task():
     scheduler.add_job(
         func=lambda: asyncio.run(async_wrapper()),
         trigger="interval",
-        hours=1
+        minutes=15
     )
     scheduler.start()
 
