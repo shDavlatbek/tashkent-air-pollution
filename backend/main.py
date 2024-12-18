@@ -1,3 +1,4 @@
+import asyncio
 from typing import AsyncIterator
 from api.auth import fastapi_users
 import uvicorn
@@ -11,15 +12,30 @@ from redis import asyncio as aioredis
 from config import settings
 from utils.filldb import fetch_and_fill_data_async
 from utils.unitofwork import get_uow
+from apscheduler.schedulers.background import BackgroundScheduler
+
+scheduler = BackgroundScheduler()
+
+def schedule_task():
+    async def async_wrapper():
+        await fetch_and_fill_data_async(await get_uow())
+
+    scheduler.add_job(
+        func=lambda: asyncio.run(async_wrapper()),
+        trigger="interval",
+        hours=1
+    )
+    scheduler.start()
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     redis = aioredis.from_url(settings.redis_url)
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
-    await fetch_and_fill_data_async(await get_uow())
+    schedule_task()
     yield
-    
-    
+    scheduler.shutdown()
+
 app = FastAPI(
     title="Unit Of Work & FastAPI Users", lifespan=lifespan
 )

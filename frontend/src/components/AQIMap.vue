@@ -26,6 +26,30 @@ const getAqiColor = (aqi) => {
   return '#9D6878';
 };
 
+function utcRoundedTime (){
+      const now = new Date();
+      return new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(), // Keep hours
+        0,                 // Set minutes to 0
+        0,                 // Set seconds to 0
+        0                  // Set milliseconds to 0
+      ));
+    }
+
+function getCurTimeParameter(parameters){
+  const curTime = utcRoundedTime();
+  const curTimeParameter = parameters.find((param) => {
+    const paramTime = new Date(param.datetime);
+    return paramTime.getTime() === curTime.getTime();
+  });
+  console.log(curTimeParameter);
+  
+  return curTimeParameter;
+}
+
 const updateMarkers = () => {
   if (map) {
     // Clear existing layers
@@ -36,22 +60,20 @@ const updateMarkers = () => {
     });
 
     // Add station markers and circles
-    stations = toRaw(stations)
     props.stations.forEach(station => {
       // getAqiColor(station?.parameter[0]?.aqi)
       // station?.parameter[0]?.aqi
-      console.log(station);
-      
-      if (typeof station?.parameter[0]!=undefined){
-        const markerHtml = `
-          <div class="station-marker" style="background-color: ${getAqiColor(station?.parameter[0]?.aqi)}">
-            <span>${station?.parameter[0]?.aqi}</span>
+      let markerHtml
+      if (getCurTimeParameter(station?.parameters)){
+        markerHtml = `
+          <div class="station-marker" style="background-color: ${getAqiColor(station?.parameters[0]?.aqi)}">
+            <span>${station?.parameters[0]?.aqi}</span>
           </div>
         `;
 
       }else{
-        const markerHtml = `
-          <div class="station-marker" style="background-color: ${"black"}">
+        markerHtml = `
+          <div class="station-marker" style="background-color: ${"transparent"}">
             <span>Sensor mavjud emas</span>
           </div>
         `;
@@ -65,16 +87,16 @@ const updateMarkers = () => {
 
       // Add circle with opacity
       L.circle([station.lat, station.lon], {
-        color: getAqiColor(station.aqi),
-        fillColor: getAqiColor(station.aqi),
+        color: getAqiColor(station?.parameters[0]?.aqi),
+        fillColor: getAqiColor(station?.parameters[0]?.aqi),
         fillOpacity: 0.2,
         radius: 2000
       }).addTo(map);
 
       L.marker([station.lat, station.lon], { icon })
         .bindPopup(`
-          <strong>${station.name}</strong><br>
-          AQI: ${station.aqi}
+          <strong>${station?.name}</strong><br>
+          AQI: ${station?.parameters[0]?.aqi}
         `)
         .addTo(map);
     });
