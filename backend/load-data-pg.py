@@ -11,6 +11,11 @@ DATABASE_URL = settings.database_url_notasync
 stations = json.load(open("data/stations.json"))
 parameters = json.load(open("data/parameters.json"))
 
+def parse_datetime(entry):
+    return datetime.strptime(entry["date"] + " " + entry["time"], "%Y-%m-%d %H:%M:%S")
+
+parameters.sort(key=parse_datetime)
+
 async def insert_data():
     # Connect to the PostgreSQL database
     conn = await asyncpg.connect(DATABASE_URL)

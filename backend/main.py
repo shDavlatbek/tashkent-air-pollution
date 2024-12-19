@@ -14,7 +14,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost", 'http://air.georesearch.uz'],  # "*" allows all origins
+    allow_origins=["http://localhost:3000", 'http://air.georesearch.uz'],  # "*" allows all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -22,8 +22,7 @@ app.add_middleware(
 
 @app.post("/fetch-data")
 async def manual_fetch_data(uow: UOWDep, user=Depends(fastapi_users.current_user(active=True))):
-    await fetch_and_fill_data_async(uow)
-    return {"message": "Data fetched and filled successfully"}
+    return await fetch_and_fill_data_async(uow)
 
 
 for router in all_routers:

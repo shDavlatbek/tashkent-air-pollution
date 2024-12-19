@@ -6,6 +6,8 @@ from api.dependencies import UOWDep
 from services.station import StationService, ParameterService
 from schemas.station import ParameterSchema, ParameterQuery, ParameterAdd, ParameterUpdate, StationQuery
 from typing import Annotated, Optional
+
+from utils.filldb import fetch_and_fill_data_async
 # from fastapi_cache.decorator import cache
 
 
@@ -26,6 +28,7 @@ async def get_stations(
     filters: Annotated[StationQuery, Query()] = None,
     user=Depends(fastapi_users.current_user(active=True))
 ):
+    await fetch_and_fill_data_async(uow)
     return await StationService().get_stations(uow, filters)
 
 
@@ -36,6 +39,7 @@ async def get_parameters(
     filters: Annotated[ParameterQuery, Query()],
     user=Depends(fastapi_users.current_user(active=True))
 ):
+    await fetch_and_fill_data_async(uow)
     return await ParameterService().get_parameters(uow, filters)
 
 
@@ -57,13 +61,3 @@ async def edit_parameter(
 ):  
     await ParameterService().edit_parameter(uow, parameter_id, parameter)
     return {"ok": True}
-
-
-@router.get("/{id}")
-# @cache(expire=CACHE_EXPIRE) 
-async def get_station(
-    uow: UOWDep,
-    filters: Annotated[StationQuery, Query()],
-    user=Depends(fastapi_users.current_user(active=True))
-):
-    return await StationService().get_station(uow, filters)

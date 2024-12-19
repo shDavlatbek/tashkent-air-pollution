@@ -1,17 +1,13 @@
 from datetime import datetime, timedelta, timezone
 import json
-from fastapi import APIRouter, Depends, Query
-from api.auth import fastapi_users
-
 from api.dependencies import UOWDep
 from services.station import StationService, ParameterService
-from schemas.station import ParameterSchema, ParameterQuery, ParameterAdd, ParameterUpdate, StationQuery
-from typing import Annotated, Optional
-from fastapi_cache.decorator import cache
+from schemas.station import ParameterAdd, ParameterQuery
 from pydantic_settings import BaseSettings
-from utils.common import now_utc_hours
+from utils.common import now_utc_hours, now_hours
 import aiohttp
 import asyncio
+import pytz
 
 from utils.unitofwork import UnitOfWork, get_uow
 
@@ -34,17 +30,12 @@ PARAMETERS = ["aqi", "humidity", "rain", "pm2_5"]
 STATIONS = {"036112022", "037112022", "038112022", "039112022", "040112022",
             "041112022", "042112022", "043112022", "044112022", "045112022"}
 
+tz=pytz.timezone("Asia/Tashkent")
+
 async def fetch_and_fill_data(uow: UOWDep):
     return await StationService().get_station(uow)
 
 async def fetch_parameter_data(session: aiohttp.ClientSession, parameter, start_date: datetime, end_date):
-    utc_plus_5 = timezone(timedelta(hours=5))
-    end_date = end_date.astimezone(utc_plus_5)
-    
-    # Remove timezone info (make naive)
-    start_date = start_date.replace(tzinfo=None)
-    end_date = end_date.replace(tzinfo=None)
-    
     headers = {
         "Content-Type": "application/json",
     }
@@ -54,7 +45,6 @@ async def fetch_parameter_data(session: aiohttp.ClientSession, parameter, start_
         "end_date": end_date.isoformat(sep=' '),
         "parameter": parameter,
     }
-    print(payload, flush=True)
     auth = aiohttp.BasicAuth(login=USERNAME, password=PASSWORD)
 
     async with session.post(API_URL, json=payload, auth=auth, headers=headers) as response:
@@ -65,15 +55,13 @@ async def fetch_parameter_data(session: aiohttp.ClientSession, parameter, start_
         
         
 async def fetch_and_fill_data_async(uow: UnitOfWork):
-    print("PROCESSING A NEW DATA FROM API || STARTED ||", flush=True)
     async with aiohttp.ClientSession() as session:
         async with uow:
             last_record = (await ParameterService().get_parameters(uow, ParameterQuery(start_date=None, end_date=None), 1))[0]
-            if last_record.date_time == now_utc_hours() + timedelta(hours=5):
+            if last_record.date_time == now_utc_hours():
                 return
-            start_date = last_record.date_time + timedelta(hours=1)
-            end_date = now_utc_hours()
-            
+            start_date = (last_record.date_time.astimezone(tz).replace(tzinfo=None) + timedelta(hours=1))
+            end_date = now_hours()
 
             tasks = []
             for parameter in PARAMETERS:
@@ -85,19 +73,9 @@ async def fetch_and_fill_data_async(uow: UnitOfWork):
 
             for parameter, sublist in zip(PARAMETERS, responses):
                 stations = []
-                print(sublist)
                 for item in sublist['data']:
                     station_id = item["station_id"]
                     if station_id == "Average":
-                        no_info_stations = list(set(STATIONS) - set(stations))
-                        for no_info_station in no_info_stations:
-                            key = (no_info_station, date_time)
-                            item['station_id'] = no_info_station
-                            item[parameter] = None
-                            if key not in merged_dict_by_id_time:
-                                merged_dict_by_id_time[key] = item.copy()
-                            else:
-                                merged_dict_by_id_time[key].update(item)
                         continue
                     stations.append(station_id)
                     date_time = item["datetime"]
@@ -112,7 +90,6 @@ async def fetch_and_fill_data_async(uow: UnitOfWork):
 
             merged_result = list(merged_dict_by_id_time.values())
             
-            json.dump(merged_result, open("data.json", "w"), indent=4)
             for parameter in merged_result:
                 await ParameterService().add_parameter(uow, ParameterAdd(
                     station=parameter["station_id"],
@@ -122,17 +99,4 @@ async def fetch_and_fill_data_async(uow: UnitOfWork):
                     prec=parameter.get("rain"),
                     pm25=parameter.get("pm2_5")
                 ))
-            print("PROCESSING A NEW DATA FROM API || FINISHED ||", flush=True)
-            return
-            #     # Add records to the database
-            #     for item in data:
-            #         record = StationData(
-            #             station_id=item["station_id"],
-            #             parameter=parameter,
-            #             value=item.get(parameter),
-            #             datetime=datetime.fromisoformat(item["datetime"])
-            #         )
-            #         db.add(record)
-
-            # Commit all changes
-            # db.commit()
+            return merged_result
